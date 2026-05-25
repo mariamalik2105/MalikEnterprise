@@ -426,7 +426,7 @@
       gap: 2rem;
       margin-top: 3.5rem;
     }
-    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 2rem; } }
+    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 2rem; align-items: start; } }
     /* ── Mobile: opacity crossfade, content-driven height ── */
     @media (max-width: 768px) {
       .product-card {
@@ -1118,21 +1118,38 @@
       .catalog-header { padding: 1.25rem 1.5rem; }
       .catalog-tabs-bar { padding: 0.9rem 1.5rem; }
       .catalog-body { padding: 1.5rem; }
-      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1.25rem; }
-      .catalog-card { height: 250px; -webkit-perspective: none !important; perspective: none !important; }
+      .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+      }
+      .catalog-card {
+        height: auto !important;
+        -webkit-perspective: none !important; perspective: none !important;
+      }
       .catalog-card-inner {
         -webkit-transform-style: flat !important; transform-style: flat !important;
         -webkit-transition: none !important; transition: none !important;
+        -webkit-transform: none !important; transform: none !important;
+        height: auto !important; position: relative !important;
       }
-      .catalog-card-inner,
       .catalog-card.flipped .catalog-card-inner {
         -webkit-transform: none !important; transform: none !important;
       }
+      /* Front face drives card height */
       .catalog-card-front {
+        position: relative !important;
+        top: auto !important; right: auto !important;
+        bottom: auto !important; left: auto !important;
         -webkit-transform: none !important; transform: none !important;
         transition: opacity 0.35s ease; z-index: 2;
+        height: auto !important;
       }
+      /* Back face overlays front */
       .catalog-card-back {
+        position: absolute !important;
+        top: 0 !important; right: 0 !important;
+        bottom: 0 !important; left: 0 !important;
         -webkit-transform: none !important; transform: none !important;
         opacity: 0; transition: opacity 0.35s ease; z-index: 1;
       }
