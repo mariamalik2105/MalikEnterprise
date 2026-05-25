@@ -426,7 +426,7 @@
       gap: 2rem;
       margin-top: 3.5rem;
     }
-    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 3rem; } }
     /* ─── Flip Cards ─── */
     .product-card {
       height: 368px;
@@ -434,6 +434,8 @@
       perspective: 1200px;
       cursor: pointer;
       background: transparent;
+      isolation: isolate;
+      position: relative;
     }
     .product-card-inner {
       position: relative;
