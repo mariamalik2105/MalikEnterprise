@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malik Enterprise — Premium Ropes & Niwar, Indore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- EmailJS — client-side email sending (free tier: 200 emails/month)
+       Setup (one-time, ~3 minutes):
+       1. Create free account at https://www.emailjs.com
+       2. Add Email Service (connect Gmail) → note your SERVICE ID
+       3. Create Email Template → note your TEMPLATE ID
+          Template variables used: {{from_name}}, {{phone}}, {{reply_to}}, {{message}}
+          Set "To Email" in the template to: mustansirmalik@gmail.com
+          Add CC: nasreenhakim@gmail.com
+       4. Go to Account > API Keys → copy your PUBLIC KEY
+       5. Replace the three placeholders below in the EMAILJS CONFIG section of the script
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brown:       #7B4A2D;
+      --coffee:      #6F4E37;
+      --light-brown: #C49A6C;
+      --beige:       #F2EAD3;
+      --sky:         #5DCFDF;
+      --black:       #1A1208;
+      --cream:       #FBF6ED;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .mono { font-family: 'Roboto Mono', monospace; }
+
+    /* ─── Rope Canvas ─── */
+    #rope-canvas {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      pointer-events: none;
+      width: 76px;
+    }
+    @media (max-width: 768px) { #rope-canvas { display: none; } }
+
+    /* ─── Nav ─── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 72px;
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(26, 18, 8, 0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 2px 24px rgba(0,0,0,0.35);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+    .nav-logo img { height: 44px; border-radius: 6px; }
+    .nav-logo span {
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: var(--beige);
+      white-space: nowrap;
+    }
+    .nav-links { display: flex; gap: 2.5rem; align-items: center; list-style: none; }
+    .nav-links a {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.75);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--beige); }
+    .nav-links a:focus-visible { outline: 2px solid var(--sky); outline-offset: 4px; border-radius: 2px; }
+    .nav-cta {
+      background: var(--brown);
+      color: var(--beige) !important;
+      padding: 0.55rem 1.25rem !important;
+      border-radius: 6px;
+      transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1) !important;
+      box-shadow: 0 3px 12px rgba(123,74,45,0.4);
+    }
+    .nav-cta:hover { background: #9A5E38 !important; transform: translateY(-2px); }
+    .nav-cta:active { transform: translateY(0) !important; }
+    #hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    #hamburger span {
+      display: block; width: 26px; height: 2px;
+      background: var(--beige);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: rgba(26,18,8,0.98);
+      backdrop-filter: blur(14px);
+      padding: 2rem;
+      z-index: 99;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--beige);
+      text-decoration: none;
+      text-transform: uppercase;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(242,234,211,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #hamburger { display: flex; }
+      #navbar { padding: 0 1.5rem; }
+    }
+
+    /* ─── Hero ─── */
+    #hero {
+      min-height: 100vh;
+      background: linear-gradient(155deg, #0E0905 0%, #2A1A0E 35%, #6F4E37 80%, #8B5E3C 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .hero-noise {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0.6;
+    }
+    .hero-radial-1 {
+      position: absolute; width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,154,108,0.18) 0%, transparent 70%);
+      top: -120px; right: 5%; pointer-events: none;
+    }
+    .hero-radial-2 {
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(93,207,223,0.07) 0%, transparent 70%);
+      bottom: 80px; left: 20%; pointer-events: none;
+    }
+    .hero-radial-3 {
+      position: absolute; width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,74,45,0.3) 0%, transparent 70%);
+      top: 50%; left: 60%; pointer-events: none;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 5vw 0 7rem;
+      max-width: 760px;
+    }
+    @media (max-width: 768px) {
+      .hero-content { padding: 6rem 1.5rem 3rem; }
+    }
+    .hero-eyebrow {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--sky);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--beige);
+      margin-bottom: 1.5rem;
+    }
+    .hero-title .accent { color: var(--light-brown); }
+    .hero-subtitle {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.75;
+      color: rgba(242,234,211,0.72);
+      margin-bottom: 2.5rem;
+      max-width: 520px;
+    }
+    .hero-chips {
+      display: flex; flex-wrap: wrap; gap: 0.65rem;
+      margin-bottom: 2.75rem;
+    }
+    .chip {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 100px;
+      border: 1px solid rgba(196,154,108,0.35);
+      color: rgba(196,154,108,0.9);
+      background: rgba(196,154,108,0.08);
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    /* ─── Buttons ─── */
+    .btn-primary {
+      background: var(--brown);
+      color: var(--beige);
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+      box-shadow: 0 4px 18px rgba(123,74,45,0.35), 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .btn-primary:hover { background: #9A5E38; transform: translateY(-3px); box-shadow: 0 8px 28px rgba(123,74,45,0.45); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+    .btn-outline {
+      border: 2px solid rgba(242,234,211,0.4);
+      color: var(--beige);
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .btn-outline:hover { border-color: var(--beige); background: rgba(242,234,211,0.08); transform: translateY(-3px); }
+    .btn-outline:active { transform: translateY(0); }
+    .btn-outline:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+    /* ─── Section Shared ─── */
+    section { padding: 7rem 0; }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 0 7rem;
+    }
+    @media (max-width: 768px) {
+      .container { padding: 0 1.5rem; }
+      section { padding: 4.5rem 0; }
+    }
+
+    .section-eyebrow {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--sky);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 1rem;
+    }
+    .section-title.light { color: var(--beige); }
+    .section-body {
+      font-weight: 300;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: rgba(26,18,8,0.72);
+      max-width: 600px;
+    }
+    .section-body.light { color: rgba(242,234,211,0.72); }
+    .rope-bar {
+      width: 52px; height: 4px;
+      background: linear-gradient(90deg, var(--coffee), var(--light-brown), var(--coffee));
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+    .rope-bar.light {
+      background: linear-gradient(90deg, var(--light-brown), #E8C98A, var(--light-brown));
+    }
+
+    /* ─── Scroll Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── About Section ─── */
+    #about { background: var(--cream); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .about-visual {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow:
+        0 8px 20px rgba(123,74,45,0.12),
+        0 30px 60px rgba(123,74,45,0.1);
+    }
+    .about-visual img { width: 100%; height: 420px; object-fit: cover; object-position: center top; display: block; }
+    .about-visual::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(26,18,8,0.25) 0%, transparent 30%),
+        linear-gradient(to top,    rgba(26,18,8,0.55) 0%, transparent 45%);
+    }
+    .deal-tags {
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+      margin-top: 1.75rem;
+    }
+    .deal-tag {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      background: rgba(123,74,45,0.1);
+      color: var(--brown);
+      border: 1px solid rgba(123,74,45,0.2);
+    }
+
+    /* ─── Stats bar ─── */
+    .stats-bar {
+      background: var(--black);
+      padding: 3.5rem 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 0 7rem;
+    }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); padding: 0 1.5rem; }
+      .stat-item { border-right: none; border-bottom: 1px solid rgba(242,234,211,0.08); }
+      .stat-item:nth-child(odd) { border-right: 1px solid rgba(242,234,211,0.08); }
+      .stat-item:nth-last-child(-n+2) { border-bottom: none; }
+    }
+    .stat-item {
+      text-align: center;
+      padding: 1.25rem;
+      border-right: 1px solid rgba(242,234,211,0.08);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--light-brown);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.5);
+      margin-top: 0.5rem;
+    }
+
+    /* ─── Products ─── */
+    #products { background: var(--beige); }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+    }
+    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; } }
+    /* ─── Flip Cards ─── */
+    .product-card {
+      height: 368px;
+      perspective: 1200px;
+      cursor: pointer;
+      background: transparent;
+    }
+    .product-card-inner {
+      position: relative;
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.72s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 18px;
+    }
+    .product-card.flipped .product-card-inner {
+      transform: rotateY(180deg);
+    }
+    .product-card-front,
+    .product-card-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    /* FRONT face */
+    .product-card-front {
+      background: linear-gradient(145deg, #5A2E15 0%, #8B5E3C 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem;
+      box-shadow:
+        0 2px 4px rgba(26,18,8,0.15),
+        0 10px 28px rgba(26,18,8,0.2);
+      transition: box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    /* subtle noise texture on card front */
+    .product-card-front::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+    .product-card-front > * { position: relative; z-index: 1; }
+    .product-card:hover .product-card-front {
+      box-shadow:
+        0 4px 8px rgba(26,18,8,0.2),
+        0 20px 48px rgba(26,18,8,0.28);
+    }
+    /* Per-card colour variants */
+    .card-pp    .product-card-front { background: linear-gradient(145deg, #7B3D15 0%, #A05C30 60%, #C49A6C 100%); }
+    .card-niwar .product-card-front { background: linear-gradient(145deg, #1A2840 0%, #1E3A5C 50%, #2D5880 100%); }
+    .card-resham .product-card-front { background: linear-gradient(145deg, #0E6B87 0%, #1A90B0 55%, #3DBCD8 100%); }
+    .card-jari  .product-card-front { background: linear-gradient(145deg, #3D2C0A 0%, #6B4E15 55%, #C49A30 100%); }
+    .card-sutli .product-card-front { background: linear-gradient(145deg, #3A0A0A 0%, #6B1A1A 55%, #A83030 100%); }
+    /* BACK face */
+    .product-card-back {
+      transform: rotateY(180deg);
+      background: var(--black);
+      box-shadow:
+        0 4px 8px rgba(123,74,45,0.09),
+        0 18px 44px rgba(123,74,45,0.18);
+    }
+    .product-card-back img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .product-card.flipped .product-card-back img { transform: scale(1.04); }
+    .product-card-back-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,18,8,0.82) 0%, rgba(26,18,8,0.15) 45%, transparent 70%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem 1.75rem;
+    }
+    .back-product-name {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--beige);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+    .back-flip-hint {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.45);
+    }
+    /* Front content */
+    .product-badge {
+      display: inline-block;
+      align-self: flex-start;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.65rem;
+      border-radius: 100px;
+      background: rgba(93,207,223,0.15);
+      border: 1px solid rgba(93,207,223,0.45);
+      color: var(--sky);
+      margin-bottom: 0.85rem;
+    }
+    /* Jari badge gets a gold accent instead */
+    .card-jari .product-badge {
+      background: rgba(196,154,48,0.18);
+      border-color: rgba(196,154,48,0.5);
+      color: #E8C96A;
+    }
+    .product-name {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--beige);
+      margin-bottom: 0.6rem;
+    }
+    .product-desc {
+      font-size: 0.87rem;
+      font-weight: 300;
+      line-height: 1.72;
+      color: rgba(242,234,211,0.7);
+      flex: 1;
+    }
+    .product-tags {
+      display: flex; flex-wrap: wrap; gap: 0.45rem;
+      margin-top: 0.9rem;
+    }
+    .product-tag {
+      font-size: 0.67rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.22rem 0.6rem;
+      border-radius: 4px;
+      background: rgba(242,234,211,0.1);
+      border: 1px solid rgba(242,234,211,0.14);
+      color: rgba(242,234,211,0.75);
+    }
+    /* Resham card — light blue with white text */
+    .card-resham .product-tag {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.9);
+    }
+    .card-resham .product-name { color: #ffffff; }
+    .card-resham .product-desc { color: rgba(255,255,255,0.85); }
+    .card-resham .flip-hint     { color: rgba(255,255,255,0.55); }
+    .flip-hint {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.35);
+      user-select: none;
+    }
+
+    /* ─── Why Us ─── */
+    #why { background: var(--black); }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+      margin-top: 3.5rem;
+    }
+    @media (max-width: 900px) { .why-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px)  { .why-grid { grid-template-columns: 1fr; } }
+    .why-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(242,234,211,0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .why-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(196,154,108,0.25);
+      transform: translateY(-6px);
+    }
+    .why-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: rgba(123,74,45,0.25);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.4rem;
+    }
+    .why-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--beige);
+      margin-bottom: 0.65rem;
+      letter-spacing: -0.01em;
+    }
+    .why-body {
+      font-size: 0.88rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(242,234,211,0.55);
+    }
+
+    /* ─── Contact ─── */
+    #contact {
+      background: linear-gradient(150deg, #1A1208 0%, #2F1D10 60%, #6F4E37 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+      opacity: 0.4; mix-blend-mode: overlay;
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+      position: relative;
+    }
+    @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; gap: 3rem; } }
+    .contact-info-list { margin-top: 2.5rem; }
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid rgba(242,234,211,0.08);
+    }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 10px;
+      background: rgba(196,154,108,0.12);
+      border: 1px solid rgba(196,154,108,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      margin-top: 0.1rem;
+    }
+    .contact-item-label {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(196,154,108,0.7);
+      margin-bottom: 0.25rem;
+    }
+    .contact-item-value {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--beige);
+      line-height: 1.5;
+    }
+    .contact-item-value a { color: var(--beige); text-decoration: none; }
+    .contact-item-value a:hover { color: var(--sky); text-decoration: underline; }
+
+    /* Contact form */
+    .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+    .form-label {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.6);
+    }
+    .form-input, .form-textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(242,234,211,0.12);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--beige);
+      outline: none;
+      transition: border-color 0.25s ease, background 0.25s ease;
+      width: 100%;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: rgba(242,234,211,0.3); }
+    .form-input:focus, .form-textarea:focus {
+      border-color: rgba(196,154,108,0.5);
+      background: rgba(255,255,255,0.09);
+    }
+    .form-textarea { resize: vertical; min-height: 130px; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: #0B0804;
+      padding: 2.5rem 0;
+      border-top: 1px solid rgba(242,234,211,0.06);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 0 7rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    @media (max-width: 768px) { .footer-inner { padding: 0 1.5rem; flex-direction: column; text-align: center; } }
+    .footer-logo { display: flex; align-items: center; gap: 0.6rem; }
+    .footer-logo img { height: 32px; border-radius: 4px; opacity: 0.85; }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(242,234,211,0.3);
+      font-weight: 300;
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(242,234,211,0.35);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-links a:hover { color: rgba(242,234,211,0.7); }
+
+    /* ─── Scroll-to-top ─── */
+    #scroll-top {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      background: var(--brown);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200;
+      opacity: 0; pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.3s ease, transform 0.3s ease, background 0.25s ease;
+      box-shadow: 0 4px 16px rgba(123,74,45,0.4);
+    }
+    #scroll-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #scroll-top:hover { background: #9A5E38; }
+    #scroll-top:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+    #scroll-top svg { color: var(--beige); }
+
+    /* ─── View All Button ─── */
+    .products-cta {
+      text-align: center;
+      margin-top: 3rem;
+    }
+    .btn-view-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.9rem 2.2rem;
+      border-radius: 8px;
+      background: var(--brown);
+      color: var(--beige);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(123,74,45,0.28);
+      transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
+    }
+    .btn-view-all:hover  { background: #9A5E38; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(123,74,45,0.38); }
+    .btn-view-all:active { transform: translateY(0); }
+    .btn-view-all:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+    /* ─── Meet the Faces Button ─── */
+    .btn-faces {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin-top: 1.75rem;
+      background: none;
+      border: 1.5px solid rgba(111,78,55,0.45);
+      color: var(--coffee);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 0.65rem 1.35rem;
+      border-radius: 8px; cursor: pointer;
+      transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+    }
+    .btn-faces:hover { background: rgba(111,78,55,0.1); border-color: var(--coffee); color: var(--brown); }
+    .btn-faces:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+    /* ─── Meet the Faces Modal ─── */
+    #faces-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(14,9,4,0.96);
+      backdrop-filter: blur(18px);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 3rem 2rem 4rem;
+      overflow-y: auto;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #faces-modal.open { opacity: 1; pointer-events: all; }
+    .faces-container { margin: auto; }
+    .faces-container { max-width: 860px; width: 100%; text-align: center; position: relative; }
+    .faces-modal-eyebrow {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(242,234,211,0.38);
+      margin-bottom: 0.5rem;
+    }
+    .faces-modal-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700;
+      color: var(--beige); letter-spacing: -0.03em; margin-bottom: 0.4rem;
+    }
+    .faces-modal-sub {
+      font-size: 0.82rem; font-weight: 300;
+      color: rgba(242,234,211,0.42); margin-bottom: 3rem;
+    }
+    .faces-grid {
+      display: flex; gap: 1.75rem; justify-content: center; align-items: flex-end;
+    }
+    .face-card {
+      flex: 1; max-width: 220px;
+      display: flex; flex-direction: column; align-items: center; gap: 0.85rem;
+    }
+    .face-card.founder { max-width: 260px; }
+    .face-photo {
+      width: 100%; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden;
+      border: 1.5px solid rgba(242,234,211,0.1);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    }
+    .face-card.founder .face-photo {
+      border-color: rgba(196,154,48,0.35);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(196,154,48,0.15);
+    }
+    .face-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .face-name {
+      font-family: 'Roboto Mono', monospace; font-size: 0.88rem; font-weight: 700;
+      color: var(--beige); letter-spacing: -0.01em;
+    }
+    .face-card.founder .face-name { color: #E8C96A; font-size: 1rem; }
+    .face-role {
+      font-size: 0.68rem; font-weight: 400; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(242,234,211,0.42);
+      margin-top: -0.5rem;
+    }
+    .face-card.founder .face-role { color: rgba(232,201,106,0.6); }
+    .faces-close {
+      position: absolute; top: -0.25rem; right: 0;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(242,234,211,0.07); border: 1px solid rgba(242,234,211,0.14);
+      color: rgba(242,234,211,0.6); cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .faces-close:hover { background: rgba(242,234,211,0.14); transform: rotate(90deg); }
+
+    /* ─── Full Catalog Modal ─── */
+    #catalog-modal {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(14, 9, 4, 0.97);
+      backdrop-filter: blur(16px);
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.32s ease;
+      overflow: hidden;
+    }
+    #catalog-modal.open { opacity: 1; pointer-events: all; }
+    .catalog-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.6rem 3rem;
+      border-bottom: 1px solid rgba(242,234,211,0.09);
+      flex-shrink: 0;
+    }
+    .catalog-eyebrow {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--sky); margin-bottom: 0.3rem;
+    }
+    .catalog-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 1.55rem; font-weight: 700; letter-spacing: -0.03em;
+      color: var(--beige);
+    }
+    .catalog-close {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(242,234,211,0.07);
+      border: 1px solid rgba(242,234,211,0.14);
+      color: var(--beige); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .catalog-close:hover { background: rgba(242,234,211,0.14); transform: rotate(90deg); }
+    .catalog-close:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+    .catalog-tabs-bar {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      padding: 1.1rem 3rem;
+      border-bottom: 1px solid rgba(242,234,211,0.07);
+      flex-shrink: 0;
+    }
+    .catalog-tab {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.35rem; border-radius: 100px;
+      border: 1px solid rgba(242,234,211,0.15);
+      color: rgba(242,234,211,0.5);
+      background: transparent; cursor: pointer;
+      transition: background 0.22s, color 0.22s, border-color 0.22s;
+    }
+    .catalog-tab.active {
+      background: var(--brown); border-color: var(--brown); color: var(--beige);
+    }
+    .catalog-tab:hover:not(.active) { color: rgba(242,234,211,0.8); border-color: rgba(242,234,211,0.3); }
+    .catalog-body {
+      flex: 1; overflow-y: auto; padding: 2.5rem 3rem;
+    }
+    .catalog-body::-webkit-scrollbar { width: 5px; }
+    .catalog-body::-webkit-scrollbar-track { background: transparent; }
+    .catalog-body::-webkit-scrollbar-thumb { background: rgba(123,74,45,0.5); border-radius: 3px; }
+    .catalog-section { display: none; }
+    .catalog-section.active { display: block; }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.35rem;
+    }
+    /* ── Catalog flip cards ── */
+    .catalog-card {
+      height: 285px; perspective: 1100px;
+      cursor: pointer; background: transparent; border: none;
+    }
+    .catalog-card-inner {
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.68s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 14px;
+    }
+    .catalog-card.flipped .catalog-card-inner { transform: rotateY(180deg); }
+    .catalog-card-front, .catalog-card-back {
+      position: absolute; inset: 0; border-radius: 14px; overflow: hidden;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    }
+    .catalog-card-front {
+      background: linear-gradient(145deg, #3D2210 0%, #5A3218 100%);
+      display: flex; flex-direction: column; padding: 1.15rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .catalog-card-front::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    }
+    .catalog-card-front > * { position: relative; z-index: 1; }
+    .catalog-card:hover .catalog-card-front { box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+    .catalog-card-back {
+      transform: rotateY(180deg);
+      background: var(--black);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .catalog-card-back img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.45s ease;
+    }
+    .catalog-card.flipped .catalog-card-back img { transform: scale(1.04); }
+    .catalog-back-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14,9,4,0.88) 0%, transparent 55%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0.9rem 1.1rem;
+    }
+    .catalog-back-name {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.9rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--beige); margin-bottom: 0.18rem;
+    }
+    .catalog-back-hint {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.56rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(242,234,211,0.38);
+    }
+    .catalog-card-name {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.95rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--beige); margin-bottom: 0.25rem;
+    }
+    .catalog-card-sub {
+      font-size: 0.71rem; font-weight: 300; line-height: 1.5;
+      color: rgba(242,234,211,0.5); margin-bottom: 0.6rem; flex: 1;
+    }
+    .catalog-brands { display: flex; flex-wrap: wrap; gap: 0.27rem; }
+    .catalog-brand {
+      font-size: 0.57rem; font-weight: 500; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 4px;
+      background: rgba(123,74,45,0.22); border: 1px solid rgba(123,74,45,0.38);
+      color: #D4A97A;
+    }
+    .catalog-flip-hint {
+      margin-top: 0.7rem; display: flex; align-items: center; gap: 0.32rem;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.57rem; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(242,234,211,0.28); user-select: none;
+    }
+    /* per-card colour accents */
+    .ccat-resham .catalog-card-front  { background: linear-gradient(145deg, #0E6B87 0%, #1A90B0 100%); }
+    .ccat-resham .catalog-brand        { background: rgba(93,207,223,0.13); border-color: rgba(93,207,223,0.25); color: var(--sky); }
+    .ccat-cotton .catalog-card-front  { background: linear-gradient(145deg, #3D2A18 0%, #6B4A28 100%); }
+    .ccat-coir   .catalog-card-front  { background: linear-gradient(145deg, #3D2C0A 0%, #6B4E15 100%); }
+    .ccat-coir   .catalog-brand        { background: rgba(196,154,48,0.18); border-color: rgba(196,154,48,0.32); color: #E8C96A; }
+    .ccat-jari   .catalog-card-front  { background: linear-gradient(145deg, #3D2C0A 0%, #6B4E15 55%, #C49A30 100%); }
+    .ccat-jari   .catalog-brand        { background: rgba(196,154,48,0.18); border-color: rgba(196,154,48,0.32); color: #E8C96A; }
+    .ccat-jute   .catalog-card-front  { background: linear-gradient(145deg, #2E1E0A 0%, #5A3C18 100%); }
+    .ccat-plastic .catalog-card-front { background: linear-gradient(145deg, #0E0905 0%, #2A1A0E 100%); }
+    .ccat-cotniwar .catalog-card-front { background: linear-gradient(145deg, #1A0E05 0%, #4A2A10 100%); }
+    .ccat-plasniwar .catalog-card-front { background: linear-gradient(145deg, #0A1820 0%, #1A3A4A 100%); }
+    .ccat-plasniwar .catalog-brand { background: rgba(93,207,223,0.12); border-color: rgba(93,207,223,0.22); color: var(--sky); }
+    .ccat-balls  .catalog-card-front  { background: linear-gradient(145deg, #2A0A1E 0%, #5A1A40 100%); }
+    .ccat-jutewine .catalog-card-front { background: linear-gradient(145deg, #2E1E0A 0%, #5A3C18 100%); }
+    .ccat-rawjute .catalog-card-front { background: linear-gradient(145deg, #2A1E0A 0%, #4A3510 100%); }
+    .ccat-sutli  .catalog-card-front  { background: linear-gradient(145deg, #3D2210 0%, #6B3818 100%); }
+    .ccat-pet    .catalog-card-front  { background: linear-gradient(145deg, #0A1E0A 0%, #1A3A1A 100%); }
+    .ccat-pet .catalog-brand { background: rgba(45,123,74,0.2); border-color: rgba(45,123,74,0.35); color: #5DC98A; }
+    @media (max-width: 768px) {
+      .catalog-header { padding: 1.25rem 1.5rem; }
+      .catalog-tabs-bar { padding: 0.9rem 1.5rem; }
+      .catalog-body { padding: 1.5rem; }
+      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; }
+      .catalog-card { height: 250px; }
+    }
+
+    /* ─── Tablet (769 – 1024 px) ─── */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .container     { padding: 0 2rem 0 5.5rem; }
+      .stats-grid    { padding: 0 2rem 0 5.5rem; }
+      .footer-inner  { padding: 0 2rem 0 5.5rem; }
+      .hero-content  { padding: 0 3vw 0 5.5rem; }
+      #navbar        { padding: 0 1.75rem; }
+      .nav-links     { gap: 1.75rem; }
+    }
+
+    /* ─── Small tablet / large phone (581 – 768 px) ─── */
+    @media (max-width: 768px) {
+      .product-card { height: 340px; }
+    }
+
+    /* ─── Faces modal — mobile ─── */
+    @media (max-width: 640px) {
+      .faces-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+      .face-card          { width: 68%; max-width: none; }
+      .face-card.founder  { width: 76%; max-width: none; }
+      #faces-modal        { padding: 2rem 1.25rem 3rem; }
+    }
+
+    /* ─── Language Toggle ─── */
+    #lang-toggle {
+      display: flex; align-items: center;
+      background: rgba(242,234,211,0.07);
+      border: 1px solid rgba(242,234,211,0.18);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem;
+      cursor: pointer;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+      color: rgba(242,234,211,0.7);
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      white-space: nowrap;
+    }
+    #lang-toggle:hover { background: rgba(242,234,211,0.13); border-color: rgba(242,234,211,0.38); color: var(--beige); }
+    #lang-toggle:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; }
+    @media (max-width: 768px) { #lang-toggle { display: none; } }
+    .lang-toggle-mobile {
+      display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+      background: rgba(242,234,211,0.06); border: 1px solid rgba(242,234,211,0.12);
+      border-radius: 8px; padding: 0.65rem 1rem; cursor: pointer;
+      font-family: 'Roboto Mono', monospace; font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.06em; color: rgba(242,234,211,0.65); width: 100%;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .lang-toggle-mobile:hover { background: rgba(242,234,211,0.12); color: var(--beige); }
+
+    /* ─── Small mobile (≤ 480 px) ─── */
+    @media (max-width: 480px) {
+      .product-card  { height: 310px; }
+      .stat-number   { font-size: 1.8rem; }
+      .hero-chips    { gap: 0.5rem; }
+      .chip          { font-size: 0.62rem; padding: 0.35rem 0.7rem; }
+      .hero-actions  { flex-direction: column; gap: 0.75rem; }
+      .btn-primary, .btn-outline { text-align: center; width: 100%; }
+      .catalog-grid  { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .catalog-card  { height: 220px; }
+      .faces-modal-title { font-size: 1.3rem; }
+      .faces-modal-sub   { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ ROPE CANVAS ═══════════════ -->
+  <canvas id="rope-canvas"></canvas>
+
+  <!-- ═══════════════ NAV ═══════════════ -->
+  <nav id="navbar">
+    <a class="nav-logo" href="#">
+      <img src="brand_assets/ME_logo.png" alt="Malik Enterprise Logo">
+      <span>MALIK ENTERPRISE</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about" data-en="About" data-hi="परिचय">About</a></li>
+      <li><a href="#products" data-en="Products" data-hi="उत्पाद">Products</a></li>
+      <li><a href="#why" data-en="Why Us" data-hi="हमें क्यों">Why Us</a></li>
+      <li><a href="#contact" class="nav-cta" data-en="Contact Us" data-hi="संपर्क करें">Contact Us</a></li>
+    </ul>
+    <button id="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
+      <span class="lang-label">हिं</span>
+    </button>
+    <button id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div id="mobile-menu" role="navigation" aria-label="Mobile menu">
+    <a href="#about" onclick="closeMobileMenu()" data-en="About" data-hi="परिचय">About</a>
+    <a href="#products" onclick="closeMobileMenu()" data-en="Products" data-hi="उत्पाद">Products</a>
+    <a href="#why" onclick="closeMobileMenu()" data-en="Why Us" data-hi="हमें क्यों">Why Us</a>
+    <a href="#contact" onclick="closeMobileMenu()" data-en="Contact Us" data-hi="संपर्क करें">Contact Us</a>
+    <button class="lang-toggle-mobile" onclick="toggleLang(); closeMobileMenu();">
+      🌐 &nbsp;<span class="lang-label">हिं</span>&thinsp;— भाषा बदलें
+    </button>
+  </div>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section id="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-radial-1"></div>
+    <div class="hero-radial-2"></div>
+    <div class="hero-radial-3"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow" style="animation: fadeUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;" data-en="Indore, M.P. · Since 1935" data-hi="इंदौर, म.प्र. · 1935 से">
+        Indore, M.P. · Since 1935
+      </p>
+      <h1 class="hero-title" style="animation: fadeUp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.25s both;">
+        MALIK<br><span class="accent">ENTERPRISE</span>
+      </h1>
+      <p class="hero-subtitle" style="animation: fadeUp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.4s both;" data-en="Indore's trusted source for premium ropes, niwar, plastic sutlis and other products. From heavy-duty utility ropes to a variety of niwars — we tie it all together." data-hi="इंदौर में प्रीमियम रस्सियों, निवाड़, प्लास्टिक सुतली और अन्य उत्पादों का एक भरोसेमंद स्रोत। भारी-भरकम काम आने वाली रस्सियों से लेकर तरह-तरह के निवाड़ तक — हम सब कुछ एक साथ जोड़ते हैं।">
+        Indore's trusted source for premium ropes, niwar, plastic sutlis and other products. From heavy-duty utility ropes to a variety of niwars — we tie it all together.
+      </p>
+      <div class="hero-chips" style="animation: fadeUp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.52s both;">
+        <span class="chip" data-en="PP Rope" data-hi="पीपी रस्सी">PP Rope</span>
+        <span class="chip" data-en="Nylon Rope" data-hi="नायलॉन की रस्सी">Nylon Rope</span>
+        <span class="chip" data-en="Resham Rope" data-hi="रेशम रस्सी">Resham Rope</span>
+        <span class="chip" data-en="Jari · Zari" data-hi="जरी · जरी">Jari · Zari</span>
+        <span class="chip" data-en="Sutli" data-hi="सुतली">Sutli</span>
+        <span class="chip" data-en="Niwar" data-hi="निवार">Niwar</span>
+      </div>
+      <div class="hero-actions" style="animation: fadeUp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.65s both;">
+        <a href="#products" class="btn-primary" data-en="View Products" data-hi="उत्पाद देखें">View Products</a>
+        <a href="#contact" class="btn-outline" data-en="Get in Touch" data-hi="संपर्क में रहो">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ STATS ═══════════════ -->
+  <div class="stats-bar">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-number">20+</div>
+        <div class="stat-label" data-en="Product Varieties" data-hi="उत्पाद की किस्में">Product Varieties</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-number">6+</div>
+        <div class="stat-label" data-en="Rope Categories" data-hi="रस्सी की श्रेणियाँ">Rope Categories</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-number" data-en="Indore" data-hi="इंदौर">Indore</div>
+        <div class="stat-label" data-en="Siyaganj Hub" data-hi="सियागंज हब">Siyaganj Hub</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-number">B2B</div>
+        <div class="stat-label" data-en="Trade Focused" data-hi="व्यापार-केंद्रित">Trade Focused</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ABOUT ═══════════════ -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="reveal">
+          <div class="about-visual">
+            <img src="brand_assets/ME_shop.jpeg" alt="Malik Enterprise shop front in Siyaganj, Indore">
+          </div>
+        </div>
+        <div>
+          <p class="section-eyebrow reveal" data-en="Who We Are" data-hi="हम कौन हैं">Who We Are</p>
+          <div class="rope-bar reveal"></div>
+          <h2 class="section-title reveal" data-en-html="Strength You Can<br>Count On" data-hi-html="एक ऐसी मज़बूती जिस पर<br>आप भरोसा कर सकते हैं">Strength You Can<br>Count On</h2>
+          <p class="section-body reveal" data-en="Based in the heart of Siyaganj, Indore, Malik Enterprise has been a cornerstone of quality rope and niwar supply across Madhya Pradesh. We deal in the full spectrum of fibrous materials — from rugged industrial ropes to traditional weaving niwars." data-hi="इंदौर के सियागंज के केंद्र में स्थित, मलिक एंटरप्राइज़ पूरे मध्य प्रदेश में बेहतरीन क्वालिटी की रस्सियों और निवाड़ की सप्लाई का एक मुख्य आधार रहा है। हम रेशेदार मटीरियल की पूरी रेंज में काम करते हैं — मज़बूत औद्योगिक रस्सियों से लेकर पारंपरिक बुनाई वाले निवाड़ तक।">
+            Based in the heart of Siyaganj, Indore, Malik Enterprise has been a cornerstone of quality rope and niwar supply across Madhya Pradesh. We deal in the full spectrum of fibrous materials — from rugged industrial ropes to traditional weaving niwars.
+          </p>
+          <p class="section-body reveal" style="margin-top:1rem;" data-en="Whether you need bulk synthetic rope, fine Jari, or vibrant Resham ropes — we have the inventory and expertise to deliver exactly what your project demands." data-hi="चाहे आपको बड़ी मात्रा में सिंथेटिक रस्सी चाहिए हो, बारीक ज़री, या चमकीली रेशम की रस्सियाँ — हमारे पास वह स्टॉक और विशेषज्ञता मौजूद है, जिससे हम आपके प्रोजेक्ट की ज़रूरत के हिसाब से बिल्कुल सही चीज़ आपको पहुँचा सकें।">
+            Whether you need bulk synthetic rope, fine Jari, or vibrant Resham ropes — we have the inventory and expertise to deliver exactly what your project demands.
+          </p>
+          <div class="deal-tags reveal">
+            <span class="deal-tag" data-en="Plastic Rope" data-hi="प्लास्टिक की रस्सी">Plastic Rope</span>
+            <span class="deal-tag" data-en="Cotton Rope" data-hi="सूती रस्सी">Cotton Rope</span>
+            <span class="deal-tag" data-en="Synthetic" data-hi="सिंथेटिक">Synthetic</span>
+            <span class="deal-tag" data-en="Coir Rope" data-hi="नारियल की रस्सी">Coir Rope</span>
+            <span class="deal-tag" data-en="Jute Rope" data-hi="जूट की रस्सी">Jute Rope</span>
+            <span class="deal-tag" data-en="Niwar" data-hi="निवार">Niwar</span>
+            <span class="deal-tag" data-en="Sutli" data-hi="सुतली">Sutli</span>
+          </div>
+          <div class="reveal">
+            <button class="btn-faces" onclick="openFaces()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+              <span data-en="Meet the Faces" data-hi="इन चेहरों से मिलिए">Meet the Faces</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PRODUCTS ═══════════════ -->
+  <section id="products">
+    <div class="container">
+      <div>
+        <p class="section-eyebrow reveal" data-en="Our Range" data-hi="हमारी रेंज">Our Range</p>
+        <div class="rope-bar reveal"></div>
+        <h2 class="section-title reveal" data-en="Featured Products" data-hi="विशेष उत्पाद">Featured Products</h2>
+        <p class="section-body reveal" style="margin:0 0 0;max-width:580px;" data-en="A carefully curated selection of ropes and niwars for every application — industrial, agricultural, construction, and beyond." data-hi="हर तरह के इस्तेमाल के लिए रस्सियों और निवारों का एक खास चुनाव — औद्योगिक, कृषि, निर्माण और अन्य क्षेत्रों के लिए।">
+          A carefully curated selection of ropes and niwars for every application — industrial, agricultural, construction, and beyond.
+        </p>
+      </div>
+      <div class="products-grid">
+
+        <!-- PP Rope -->
+        <div class="product-card card-pp reveal" onclick="this.classList.toggle('flipped')" role="button" aria-label="PP Rope — click to flip">
+          <div class="product-card-inner">
+            <div class="product-card-front">
+              <span class="product-badge" data-en="Bestseller" data-hi="बेस्टसेलर">Bestseller</span>
+              <h3 class="product-name" data-en="PP Rope" data-hi="पीपी रस्सी">PP Rope</h3>
+              <p class="product-desc" data-en="Lightweight, water-resistant polypropylene rope built for packaging, agriculture, and marine use. Floats on water and resists moisture — ideal for outdoor and heavy-duty applications." data-hi="हल्की, पानी-रोधी पॉलीप्रोपाइलीन रस्सी, जिसे पैकेजिंग, खेती-बाड़ी और समुद्री इस्तेमाल के लिए बनाया गया है। यह पानी पर तैरती है और नमी से सुरक्षित रहती है — बाहरी और भारी-भरकम कामों के लिए एकदम सही।">
+                Lightweight, water-resistant polypropylene rope built for packaging, agriculture, and marine use. Floats on water and resists moisture — ideal for outdoor and heavy-duty applications.
+              </p>
+              <div class="product-tags">
+                <span class="product-tag" data-en="Packaging" data-hi="पैकेजिंग">Packaging</span>
+                <span class="product-tag" data-en="Agriculture" data-hi="खेती-बाड़ी">Agriculture</span>
+                <span class="product-tag" data-en="Marine" data-hi="समुद्री इस्तेमाल">Marine</span>
+              </div>
+              <div class="flip-hint">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                <span data-en="Click to see product" data-hi="उत्पाद देखने के लिए क्लिक करें">Click to see product</span>
+              </div>
+            </div>
+            <div class="product-card-back">
+              <img src="brand_assets/PP.jpg" alt="PP Rope coil">
+              <div class="product-card-back-overlay">
+                <div class="back-product-name" data-en="PP Rope" data-hi="पीपी रस्सी">PP Rope</div>
+                <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Niwar -->
+        <div class="product-card card-niwar reveal reveal-delay-1" onclick="this.classList.toggle('flipped')" role="button" aria-label="Niwar — click to flip">
+          <div class="product-card-inner">
+            <div class="product-card-front">
+              <span class="product-badge" data-en="Woven" data-hi="बुना हुआ">Woven</span>
+              <h3 class="product-name" data-en="Niwar" data-hi="निवार">Niwar</h3>
+              <p class="product-desc" data-en="A flat woven band available in cotton and plastic varieties. Cotton niwar is widely used in furniture making, charpoys, and weaving. Plastic niwar handles packaging, agricultural bundling, and heavy-duty utility needs with ease." data-hi="एक चपटी बुनी हुई पट्टी जो सूती और प्लास्टिक, दोनों किस्मों में उपलब्ध है। सूती निवार का व्यापक उपयोग फर्नीचर बनाने, चारपाइयों और बुनाई के कामों में किया जाता है। प्लास्टिक निवार पैकेजिंग, कृषि संबंधी बंडल बनाने और भारी-भरकम उपयोग की ज़रूरतों को आसानी से पूरा करती है।">
+                A flat woven band available in cotton and plastic varieties. Cotton niwar is widely used in furniture making, charpoys, and weaving. Plastic niwar handles packaging, agricultural bundling, and heavy-duty utility needs with ease.
+              </p>
+              <div class="product-tags">
+                <span class="product-tag" data-en="Furniture" data-hi="फर्नीचर">Furniture</span>
+                <span class="product-tag" data-en="Weaving" data-hi="बुनाई">Weaving</span>
+                <span class="product-tag" data-en="Packaging" data-hi="पैकेजिंग">Packaging</span>
+              </div>
+              <div class="flip-hint">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                <span data-en="Click to see product" data-hi="उत्पाद देखने के लिए क्लिक करें">Click to see product</span>
+              </div>
+            </div>
+            <div class="product-card-back">
+              <img src="brand_assets/Cotton_niwar.jpeg" alt="Cotton niwar roll">
+              <div class="product-card-back-overlay">
+                <div class="back-product-name" data-en="Niwar" data-hi="निवार">Niwar</div>
+                <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resham Rope -->
+        <div class="product-card card-resham reveal reveal-delay-2" onclick="this.classList.toggle('flipped')" role="button" aria-label="Resham Rope — click to flip">
+          <div class="product-card-inner">
+            <div class="product-card-front">
+              <span class="product-badge" data-en="Synthetic" data-hi="सिंथेटिक">Synthetic</span>
+              <h3 class="product-name" data-en="Resham Rope" data-hi="रेशम की रस्सी">Resham Rope</h3>
+              <p class="product-desc" data-en="Available in both coloured and white variants — high-strength, UV-resistant synthetic rope for durable multi-purpose use. Commonly used for industrial packaging, securing materials, tarpaulin covering, and agricultural tasks." data-hi="रंगीन और सफ़ेद, दोनों तरह के विकल्पों में उपलब्ध — यह एक मज़बूत, UV-प्रतिरोधी सिंथेटिक रस्सी है, जो लंबे समय तक चलने वाले और कई तरह के कामों के लिए उपयुक्त है। इसका इस्तेमाल आमतौर पर औद्योगिक पैकेजिंग, सामान को सुरक्षित रखने, तिरपाल से ढकने और खेती-बाड़ी के कामों के लिए किया जाता है।">
+                Available in both coloured and white variants — high-strength, UV-resistant synthetic rope for durable multi-purpose use. Commonly used for industrial packaging, securing materials, tarpaulin covering, and agricultural tasks.
+              </p>
+              <div class="product-tags">
+                <span class="product-tag" data-en="Industrial" data-hi="औद्योगिक">Industrial</span>
+                <span class="product-tag" data-en="Packaging" data-hi="पैकेजिंग">Packaging</span>
+                <span class="product-tag" data-en="Agricultural" data-hi="कृषि">Agricultural</span>
+              </div>
+              <div class="flip-hint">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                <span data-en="Click to see product" data-hi="उत्पाद देखने के लिए क्लिक करें">Click to see product</span>
+              </div>
+            </div>
+            <div class="product-card-back">
+              <img src="brand_assets/White_resham.jpeg" alt="Resham rope bundles">
+              <div class="product-card-back-overlay">
+                <div class="back-product-name" data-en="Resham Rope" data-hi="रेशम की रस्सी">Resham Rope</div>
+                <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plastic Sutli -->
+        <div class="product-card card-sutli reveal reveal-delay-3" onclick="this.classList.toggle('flipped')" role="button" aria-label="Plastic Sutli — click to flip">
+          <div class="product-card-inner">
+            <div class="product-card-front">
+              <span class="product-badge" data-en="Packaging" data-hi="पैकेजिंग">Packaging</span>
+              <h3 class="product-name" data-en="Plastic Sutli" data-hi="प्लास्टिक सुतली">Plastic Sutli</h3>
+              <p class="product-desc" data-en="Strong, lightweight, and weather-resistant twine made from polypropylene or PVC. Ideal for bundling, tying, and securing packages, cartons, and sacks — cost-effective, rot-proof, and holds tight knots across all packing needs." data-hi="पॉलीप्रोपाइलीन या PVC से बनी मज़बूत, हल्की और मौसम-प्रतिरोधी सुतली। पैकेज, डिब्बों और बोरों को बांधने और सुरक्षित करने के लिए आदर्श — किफ़ायती, सड़न-रोधी और हर पैकिंग ज़रूरत के लिए मज़बूत गांठें बनाए रखती है।">
+                Strong, lightweight, and weather-resistant twine made from polypropylene or PVC. Ideal for bundling, tying, and securing packages, cartons, and sacks — cost-effective, rot-proof, and holds tight knots across all packing needs.
+              </p>
+              <div class="product-tags">
+                <span class="product-tag" data-en="Packaging" data-hi="पैकेजिंग">Packaging</span>
+                <span class="product-tag" data-en="Bundling" data-hi="बंडलिंग">Bundling</span>
+                <span class="product-tag" data-en="Industrial" data-hi="औद्योगिक">Industrial</span>
+              </div>
+              <div class="flip-hint">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                <span data-en="Click to see product" data-hi="उत्पाद देखने के लिए क्लिक करें">Click to see product</span>
+              </div>
+            </div>
+            <div class="product-card-back">
+              <img src="brand_assets/PlasticSutli.jpg" alt="Plastic Sutli coil">
+              <div class="product-card-back-overlay">
+                <div class="back-product-name" data-en="Plastic Sutli" data-hi="प्लास्टिक सुतली">Plastic Sutli</div>
+                <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /products-grid -->
+
+      <div class="products-cta reveal">
+        <button class="btn-view-all" id="btn-view-all" aria-label="View all products catalog">
+          <span data-en="View More Products" data-hi="और उत्पाद देखें">View More Products</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════ WHY US ═══════════════ -->
+  <section id="why">
+    <div class="container">
+      <p class="section-eyebrow reveal" data-en="Why Choose Us" data-hi="हमें क्यों चुनें">Why Choose Us</p>
+      <div class="rope-bar light reveal"></div>
+      <h2 class="section-title light reveal" data-en-html="Built on Reliability,<br>Woven with Trust" data-hi-html="विश्वसनीयता पर आधारित,<br>विश्वास से बुना हुआ">Built on Reliability,<br>Woven with Trust</h2>
+      <div class="why-grid">
+        <div class="why-card reveal">
+          <div class="why-icon">🏭</div>
+          <div class="why-title" data-en="Wide Product Range" data-hi="उत्पादों की विस्तृत श्रृंखला">Wide Product Range</div>
+          <div class="why-body" data-en="From industrial-grade PP and Nylon ropes to heavy-duty Jari and traditional niwars — a single source for all your rope and utility requirements." data-hi="औद्योगिक-ग्रेड PP और नायलॉन की रस्सियों से लेकर भारी-भरकम जरी और पारंपरिक निवारों तक — आपकी रस्सी और उपयोगिता संबंधी सभी ज़रूरतों के लिए एक ही स्रोत।">From industrial-grade PP and Nylon ropes to heavy-duty Jari and traditional niwars — a single source for all your rope and utility requirements.</div>
+        </div>
+        <div class="why-card reveal reveal-delay-1">
+          <div class="why-icon">⚡</div>
+          <div class="why-title" data-en="Reliable Supply" data-hi="विश्वसनीय आपूर्ति">Reliable Supply</div>
+          <div class="why-body" data-en="Consistent stock availability backed by established supplier relationships. Your production schedules never have to wait on us." data-hi="स्थापित आपूर्तिकर्ता संबंधों के सहयोग से स्टॉक की निरंतर उपलब्धता। आपके उत्पादन शेड्यूल को हमारी वजह से कभी इंतज़ार नहीं करना पड़ेगा।">Consistent stock availability backed by established supplier relationships. Your production schedules never have to wait on us.</div>
+        </div>
+        <div class="why-card reveal reveal-delay-2">
+          <div class="why-icon">✅</div>
+          <div class="why-title" data-en="Proven Quality" data-hi="साबितशुदा गुणवत्ता">Proven Quality</div>
+          <div class="why-body" data-en="Every product is sourced and vetted for strength, durability, and finish. We stand by the quality of what we sell — every single time." data-hi="हर प्रोडक्ट को उसकी मज़बूती, टिकाऊपन और फ़िनिश के लिए सोर्स और परखा जाता है। हम जो कुछ भी बेचते हैं, उसकी गुणवत्ता की गारंटी लेते हैं — हर बार।">Every product is sourced and vetted for strength, durability, and finish. We stand by the quality of what we sell — every single time.</div>
+        </div>
+        <div class="why-card reveal reveal-delay-1">
+          <div class="why-icon">📦</div>
+          <div class="why-title" data-en="Bulk &amp; Trade Orders" data-hi="थोक और व्यापारिक ऑर्डर">Bulk &amp; Trade Orders</div>
+          <div class="why-body" data-en="Tailored for B2B buyers — flexible quantities, competitive pricing, and the experience to handle large-scale supply contracts." data-hi="B2B खरीदारों के लिए विशेष रूप से तैयार — लचीली मात्रा, प्रतिस्पर्धी कीमतें, और बड़े पैमाने के आपूर्ति अनुबंधों को संभालने का अनुभव।">Tailored for B2B buyers — flexible quantities, competitive pricing, and the experience to handle large-scale supply contracts.</div>
+        </div>
+        <div class="why-card reveal reveal-delay-2">
+          <div class="why-icon">📍</div>
+          <div class="why-title" data-en="Siyaganj, Indore" data-hi="सियागंज, इंदौर">Siyaganj, Indore</div>
+          <div class="why-body" data-en="Strategically located in Indore's premier trading hub, ensuring fast local delivery and easy access for buyers across M.P. and beyond." data-hi="इंदौर के प्रमुख व्यापारिक केंद्र में रणनीतिक रूप से स्थित; यह तेज़ स्थानीय डिलीवरी और मध्य प्रदेश व उससे बाहर के खरीदारों के लिए आसान पहुँच सुनिश्चित करता है।">Strategically located in Indore's premier trading hub, ensuring fast local delivery and easy access for buyers across M.P. and beyond.</div>
+        </div>
+        <div class="why-card reveal reveal-delay-3">
+          <div class="why-icon">🤝</div>
+          <div class="why-title" data-en="Expert Guidance" data-hi="विशेषज्ञों का मार्गदर्शन">Expert Guidance</div>
+          <div class="why-body" data-en="Not sure which rope suits your need? Our team guides you through specifications, load ratings, and material choices with decades of experience." data-hi="क्या आप निश्चित नहीं हैं कि कौन सी रस्सी आपकी ज़रूरत के हिसाब से सही रहेगी? हमारी टीम दशकों के अनुभव के साथ आपको स्पेसिफिकेशन्स, लोड रेटिंग्स और मटीरियल के चुनाव के बारे में मार्गदर्शन देती है।">Not sure which rope suits your need? Our team guides you through specifications, load ratings, and material choices with decades of experience.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CONTACT ═══════════════ -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Left: Info -->
+        <div>
+          <p class="section-eyebrow reveal" data-en="Get in Touch" data-hi="संपर्क करें">Get in Touch</p>
+          <div class="rope-bar light reveal"></div>
+          <h2 class="section-title light reveal" data-en-html="Let's Talk<br>Business" data-hi-html="आइए बात करें<br>व्यवसाय">Let's Talk<br>Business</h2>
+          <p class="section-body light reveal" data-en="Ready to place an order or want to discuss requirements? Reach out directly — we respond promptly and are happy to discuss bulk pricing and custom supply arrangements." data-hi="क्या आप ऑर्डर देने के लिए तैयार हैं, या अपनी ज़रूरतों पर चर्चा करना चाहते हैं? हमसे सीधे संपर्क करें — हम तुरंत जवाब देते हैं, और हमें थोक कीमतों व विशेष सप्लाई व्यवस्थाओं पर चर्चा करके खुशी होगी।">
+            Ready to place an order or want to discuss requirements? Reach out directly — we respond promptly and are happy to discuss bulk pricing and custom supply arrangements.
+          </p>
+          <div class="contact-info-list reveal">
+            <div class="contact-item">
+              <div class="contact-icon">📍</div>
+              <div>
+                <div class="contact-item-label" data-en="Address" data-hi="पता">Address</div>
+                <div class="contact-item-value"><a href="https://maps.google.com/?q=Malik+Enterprises+125+Siyaganj+Main+Rd+Siyaganj+Indore+Madhya+Pradesh+452007" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(242,234,211,0.35);">125, Siyaganj Main Road, Indore — 452007 (M.P.)</a></div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">📞</div>
+              <div>
+                <div class="contact-item-label" data-en="Telephone" data-hi="टेलीफ़ोन">Telephone</div>
+                <div class="contact-item-value">
+                  <a href="tel:07314045745">0731-4045745</a>
+                </div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">📱</div>
+              <div>
+                <div class="contact-item-label" data-en="Mobile" data-hi="मोबाइल">Mobile</div>
+                <div class="contact-item-value">
+                  <div style="margin-bottom:0.35rem;">
+                    <span style="opacity:0.6;font-size:0.78rem;display:block;margin-bottom:0.1rem;" data-en="Mustansir Malik" data-hi="मुस्तनसीर मलिक">Mustansir Malik</span>
+                    <a href="tel:9425904432">9425904432</a>
+                  </div>
+                  <div>
+                    <span style="opacity:0.6;font-size:0.78rem;display:block;margin-bottom:0.1rem;" data-en="Nasreen Malik" data-hi="नसरीन मलिक">Nasreen Malik</span>
+                    <a href="tel:9893356767">9893356767</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">✉️</div>
+              <div>
+                <div class="contact-item-label" data-en="Email" data-hi="ईमेल">Email</div>
+                <div class="contact-item-value">
+                  <a href="mailto:malikenterprise125@gmail.com">malikenterprise125@gmail.com</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Form -->
+        <div class="reveal">
+          <form class="contact-form" onsubmit="handleForm(event)">
+            <div class="form-group">
+              <label class="form-label" for="name" data-en="Full Name" data-hi="पूरा नाम">Full Name</label>
+              <input class="form-input" type="text" id="name" name="name" placeholder="Your name" data-en-ph="Your name" data-hi-ph="आपका नाम" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone" data-en="Phone / WhatsApp" data-hi="फ़ोन / WhatsApp">Phone / WhatsApp</label>
+              <input class="form-input" type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email" data-en="Email Address" data-hi="ईमेल पता">Email Address</label>
+              <input class="form-input" type="email" id="email" name="email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="message" data-en="Your Enquiry" data-hi="आपकी पूछताछ">Your Enquiry</label>
+              <textarea class="form-textarea" id="message" name="message" placeholder="Tell us about your requirements — product type, quantity, delivery location…" data-en-ph="Tell us about your requirements — product type, quantity, delivery location…" data-hi-ph="हमें अपनी ज़रूरतें बताएं — उत्पाद का प्रकार, मात्रा, डिलीवरी स्थान…" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="align-self:flex-start; margin-top:0.5rem;" data-en="Send Enquiry" data-hi="जांच भेजें">
+              Send Enquiry
+            </button>
+            <div id="form-success" style="display:none; margin-top:1.25rem; background:rgba(93,207,223,0.07); border:1px solid rgba(93,207,223,0.25); border-radius:10px; padding:1.25rem 1.4rem;">
+              <div style="display:flex;align-items:flex-start;gap:0.85rem;">
+                <div style="width:34px;height:34px;border-radius:50%;background:rgba(93,207,223,0.15);border:1px solid rgba(93,207,223,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">✓</div>
+                <div>
+                  <div style="font-family:'Roboto Mono',monospace;font-size:0.85rem;font-weight:700;color:#5DCFDF;margin-bottom:0.4rem;letter-spacing:-0.01em;">Enquiry Received!</div>
+                  <div style="font-size:0.82rem;font-weight:300;line-height:1.65;color:rgba(242,234,211,0.72);">Thank you for reaching out to Malik Enterprise. We have received your enquiry and will review it promptly. Our team will get back to you within <strong style="color:rgba(242,234,211,0.9);">24 hours</strong>. We look forward to serving you.</div>
+                </div>
+              </div>
+            </div>
+            <div id="form-error-detail" style="display:none; margin-top:1rem; background:rgba(200,50,50,0.08); border:1px solid rgba(200,50,50,0.3); border-radius:8px; padding:0.9rem 1.1rem; font-family:'Roboto Mono',monospace; font-size:0.78rem; color:#ff9999; word-break:break-word;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="brand_assets/ME_logo.png" alt="Malik Enterprise">
+        <span style="font-family:'Roboto Mono',monospace; font-size:0.78rem; letter-spacing:0.1em; color:rgba(242,234,211,0.4);">MALIK ENTERPRISE</span>
+      </div>
+      <div class="footer-copy">© 2026 Malik Enterprise · Siyaganj, Indore</div>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#products">Products</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════ MEET THE FACES MODAL ═══════════════ -->
+  <div id="faces-modal" role="dialog" aria-modal="true" aria-label="Meet the Faces">
+    <div class="faces-container">
+      <button class="faces-close" onclick="closeFaces()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <p class="faces-modal-eyebrow" data-en="Malik Enterprise · Since 1935" data-hi="मलिक एंटरप्राइज · 1935 से">Malik Enterprise · Since 1935</p>
+      <h2 class="faces-modal-title" data-en="Meet the Faces" data-hi="इन चेहरों से मिलिए">Meet the Faces</h2>
+      <p class="faces-modal-sub" data-en="The people who have built and continue to grow this business" data-hi="वे लोग जिन्होंने इस व्यवसाय को खड़ा किया है और लगातार आगे बढ़ा रहे हैं">The people who have built and continue to grow this business</p>
+      <div class="faces-grid">
+        <div class="face-card">
+          <div class="face-photo">
+            <img src="brand_assets/Mustansir%20Malik.png" alt="Mustansir Malik">
+          </div>
+          <div class="face-name" data-en="Mustansir Malik" data-hi="मुस्तनसीर मलिक">Mustansir Malik</div>
+          <div class="face-role" data-en="Proprietor" data-hi="मालिक">Proprietor</div>
+        </div>
+        <div class="face-card founder">
+          <div class="face-photo">
+            <img src="brand_assets/Asgar%20Ali%20Malik.png" alt="Asgar Ali Malik">
+          </div>
+          <div class="face-name" data-en="Asgar Ali Malik" data-hi="असगर अली मलिक">Asgar Ali Malik</div>
+          <div class="face-role" data-en="Founder" data-hi="संस्थापक">Founder</div>
+        </div>
+        <div class="face-card">
+          <div class="face-photo">
+            <img src="brand_assets/Nasreen%20Malik.png" alt="Nasreen Malik">
+          </div>
+          <div class="face-name" data-en="Nasreen Malik" data-hi="नसरीन मलिक">Nasreen Malik</div>
+          <div class="face-role" data-en="Manager" data-hi="प्रबंधक">Manager</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ FULL CATALOG MODAL ═══════════════ -->
+  <div id="catalog-modal" role="dialog" aria-modal="true" aria-label="Full Product Catalog">
+
+    <div class="catalog-header">
+      <div>
+        <p class="catalog-eyebrow" data-en="Complete Range" data-hi="पूरी रेंज">Complete Range</p>
+        <h2 class="catalog-title" data-en="All Products" data-hi="सभी उत्पाद">All Products</h2>
+      </div>
+      <button class="catalog-close" id="catalog-close" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="catalog-tabs-bar">
+      <button class="catalog-tab active" data-tab="ropes" data-en="Ropes" data-hi="रस्सियाँ">Ropes</button>
+      <button class="catalog-tab" data-tab="niwars" data-en="Niwars &amp; Others" data-hi="निवार और अन्य">Niwars &amp; Others</button>
+    </div>
+
+    <div class="catalog-body">
+
+      <!-- ── ROPES ── -->
+      <div class="catalog-section active" id="cat-ropes">
+        <div class="catalog-grid">
+
+          <div class="catalog-card" onclick="this.classList.toggle('flipped')" role="button" aria-label="PP Ropes">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="PP Ropes" data-hi="PP रस्सियाँ">PP Ropes</div>
+                <div class="catalog-card-sub" data-en="Lightweight, water-resistant polypropylene" data-hi="हल्की, जल-प्रतिरोधी पॉलीप्रोपाइलीन">Lightweight, water-resistant polypropylene</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Apollo</span><span class="catalog-brand">Rajhams</span><span class="catalog-brand">Supergrip</span>' data-hi-html='<span class="catalog-brand">अपोलो</span><span class="catalog-brand">राजहंस</span><span class="catalog-brand">सुपरग्रिप</span>'><span class="catalog-brand">Apollo</span><span class="catalog-brand">Rajhams</span><span class="catalog-brand">Supergrip</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/PP.jpg" alt="PP Ropes"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="PP Ropes" data-hi="PP रस्सियाँ">PP Ropes</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-resham" onclick="this.classList.toggle('flipped')" role="button" aria-label="Resham Ropes">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Resham Ropes" data-hi="रेशम रस्सियाँ">Resham Ropes</div>
+                <div class="catalog-card-sub" data-en="High-strength, UV-resistant synthetic" data-hi="उच्च शक्ति, यूवी प्रतिरोधी सिंथेटिक">High-strength, UV-resistant synthetic</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Shiva</span><span class="catalog-brand">Kastoori</span><span class="catalog-brand">Krishna</span><span class="catalog-brand">Gopal</span><span class="catalog-brand">Star</span>' data-hi-html='<span class="catalog-brand">शिव</span><span class="catalog-brand">कस्तूरी</span><span class="catalog-brand">कृष्ण</span><span class="catalog-brand">गोपाल</span><span class="catalog-brand">स्टार</span>'><span class="catalog-brand">Shiva</span><span class="catalog-brand">Kastoori</span><span class="catalog-brand">Krishna</span><span class="catalog-brand">Gopal</span><span class="catalog-brand">Star</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Colored%20Resham.jpeg" alt="Resham Ropes"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Resham Ropes" data-hi="रेशम रस्सियाँ">Resham Ropes</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-cotton" onclick="this.classList.toggle('flipped')" role="button" aria-label="Cotton Ropes">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Cotton Ropes" data-hi="सूती रस्सियाँ">Cotton Ropes</div>
+                <div class="catalog-card-sub" data-en="Natural soft-fiber rope" data-hi="प्राकृतिक मुलायम रेशे वाली रस्सी">Natural soft-fiber rope</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Cotton_rope.jpg" alt="Cotton Ropes"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Cotton Ropes" data-hi="सूती रस्सियाँ">Cotton Ropes</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-coir" onclick="this.classList.toggle('flipped')" role="button" aria-label="Coir">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Coir" data-hi="नारियल रस्सी">Coir</div>
+                <div class="catalog-card-sub" data-en="Natural coconut fiber rope" data-hi="प्राकृतिक नारियल रेशे की रस्सी">Natural coconut fiber rope</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Gold</span>' data-hi-html='<span class="catalog-brand">गोल्ड</span>'><span class="catalog-brand">Gold</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Coir_rope.jpeg" alt="Coir Rope"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Coir" data-hi="नारियल रस्सी">Coir</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-jute" onclick="this.classList.toggle('flipped')" role="button" aria-label="Jute Ropes">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Jute Ropes" data-hi="जूट की रस्सियाँ">Jute Ropes</div>
+                <div class="catalog-card-sub" data-en="½ inch – 4 inch" data-hi="½ इंच – 4 इंच">½ inch – 4 inch</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Jute_rope.jpg" alt="Jute Ropes"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Jute Ropes" data-hi="जूट की रस्सियाँ">Jute Ropes</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-plastic" onclick="this.classList.toggle('flipped')" role="button" aria-label="Plastic Ropes">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Plastic Ropes" data-hi="प्लास्टिक की रस्सियाँ">Plastic Ropes</div>
+                <div class="catalog-card-sub" data-en="2 mm – 8 mm" data-hi="2 मिमी – 8 मिमी">2 mm – 8 mm</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Teen Ekka</span>' data-hi-html='<span class="catalog-brand">तीन एक्का</span>'><span class="catalog-brand">Teen Ekka</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Plastic_rope.png" alt="Plastic Ropes"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Plastic Ropes" data-hi="प्लास्टिक की रस्सियाँ">Plastic Ropes</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-jari" onclick="this.classList.toggle('flipped')" role="button" aria-label="Jari (Zari)">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Jari (Zari)" data-hi="ज़री (Zari)">Jari (Zari)</div>
+                <div class="catalog-card-sub" data-en="Metallic &amp; reinforced fiber rope" data-hi="धातु और मज़बूत फाइबर रस्सी">Metallic &amp; reinforced fiber rope</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Jari.jpeg" alt="Jari Zari"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Jari (Zari)" data-hi="ज़री (Zari)">Jari (Zari)</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /cat-ropes -->
+
+      <!-- ── NIWARS & OTHERS ── -->
+      <div class="catalog-section" id="cat-niwars">
+        <div class="catalog-grid">
+
+          <div class="catalog-card ccat-cotniwar" onclick="this.classList.toggle('flipped')" role="button" aria-label="Cotton Niwar">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Cotton Niwar" data-hi="कॉटन निवार">Cotton Niwar</div>
+                <div class="catalog-card-sub" data-en="Premium natural cotton flat rope" data-hi="प्रीमियम प्राकृतिक सूती फ्लैट रस्सी">Premium natural cotton flat rope</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Balaji Gold</span><span class="catalog-brand">Multi</span><span class="catalog-brand">Bracelet Maruti</span><span class="catalog-brand">Shalimar</span><span class="catalog-brand">Sada Bahar</span><span class="catalog-brand">Platinum</span><span class="catalog-brand">Anmol Ratan</span><span class="catalog-brand">Soney Ka Sikka</span>' data-hi-html='<span class="catalog-brand">बालाजी गोल्ड</span><span class="catalog-brand">मल्टी</span><span class="catalog-brand">ब्रेसलेट मारुती</span><span class="catalog-brand">शालीमार</span><span class="catalog-brand">सदा बहार</span><span class="catalog-brand">प्लैटिनम</span><span class="catalog-brand">अनमोल रतन</span><span class="catalog-brand">सोने का सिक्का</span>'><span class="catalog-brand">Balaji Gold</span><span class="catalog-brand">Multi</span><span class="catalog-brand">Bracelet Maruti</span><span class="catalog-brand">Shalimar</span><span class="catalog-brand">Sada Bahar</span><span class="catalog-brand">Platinum</span><span class="catalog-brand">Anmol Ratan</span><span class="catalog-brand">Soney Ka Sikka</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/Cotton_niwar.jpeg" alt="Cotton Niwar"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Cotton Niwar" data-hi="कॉटन निवार">Cotton Niwar</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-plasniwar" onclick="this.classList.toggle('flipped')" role="button" aria-label="Plastic Niwar">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Plastic Niwar" data-hi="प्लास्टिक निवार">Plastic Niwar</div>
+                <div class="catalog-card-sub" data-en="Durable synthetic flat rope" data-hi="टिकाऊ सिंथेटिक फ्लैट रस्सी">Durable synthetic flat rope</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Pachranga</span><span class="catalog-brand">Victory</span><span class="catalog-brand">Mahavat</span><span class="catalog-brand">Kohinoor</span><span class="catalog-brand">Khara Sona</span><span class="catalog-brand">Arihant</span><span class="catalog-brand">Superfine I</span><span class="catalog-brand">Gulmohar</span><span class="catalog-brand">Colors</span><span class="catalog-brand">Superfine II</span>' data-hi-html='<span class="catalog-brand">पचरंगा</span><span class="catalog-brand">विक्ट्री</span><span class="catalog-brand">महावत</span><span class="catalog-brand">कोहिनोर</span><span class="catalog-brand">खरा सोना</span><span class="catalog-brand">अरिहंत</span><span class="catalog-brand">सुपरफाइन I</span><span class="catalog-brand">गुलमोहर</span><span class="catalog-brand">कलर्स</span><span class="catalog-brand">सुपरफाइन II</span>'><span class="catalog-brand">Pachranga</span><span class="catalog-brand">Victory</span><span class="catalog-brand">Mahavat</span><span class="catalog-brand">Kohinoor</span><span class="catalog-brand">Khara Sona</span><span class="catalog-brand">Arihant</span><span class="catalog-brand">Superfine I</span><span class="catalog-brand">Gulmohar</span><span class="catalog-brand">Colors</span><span class="catalog-brand">Superfine II</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/PlasticNiwar.jpeg" alt="Plastic Niwar"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Plastic Niwar" data-hi="प्लास्टिक निवार">Plastic Niwar</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-balls" onclick="this.classList.toggle('flipped')" role="button" aria-label="Resham Balls">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Resham Balls" data-hi="रेशम के गोले">Resham Balls</div>
+                <div class="catalog-card-sub" data-en="White &amp; Colored" data-hi="सफेद और रंगीन">White &amp; Colored</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/ReshamBalls.png" alt="Resham Balls"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Resham Balls" data-hi="रेशम के गोले">Resham Balls</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-jutewine" onclick="this.classList.toggle('flipped')" role="button" aria-label="Jute Twine Sutli">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Jute Twine (Sutli)" data-hi="जूट की डोरी (सुतली)">Jute Twine (Sutli)</div>
+                <div class="catalog-card-sub" data-en="II Ply &amp; III Ply" data-hi="II प्लाई और III प्लाई">II Ply &amp; III Ply</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/JuteTwine%28Sutli%29.png" alt="Jute Twine Sutli"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Jute Twine (Sutli)" data-hi="जूट की डोरी (सुतली)">Jute Twine (Sutli)</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-rawjute" onclick="this.classList.toggle('flipped')" role="button" aria-label="Raw Jute">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Raw Jute" data-hi="रॉ जूट">Raw Jute</div>
+                <div class="catalog-card-sub" data-en="Natural raw fiber bales" data-hi="प्राकृतिक कच्चे रेशे की गांठें">Natural raw fiber bales</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/RawJute.png" alt="Raw Jute"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Raw Jute" data-hi="रॉ जूट">Raw Jute</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-sutli" onclick="this.classList.toggle('flipped')" role="button" aria-label="Plastic Sutli">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="Plastic Sutli" data-hi="प्लास्टिक सुतली">Plastic Sutli</div>
+                <div class="catalog-card-sub" data-en="Synthetic packaging twine" data-hi="सिंथेटिक पैकेजिंग सुतली">Synthetic packaging twine</div>
+                <div class="catalog-brands" data-en-html='<span class="catalog-brand">Profile</span><span class="catalog-brand">Guru Gold</span><span class="catalog-brand">Super Pack</span><span class="catalog-brand">Shaktiman</span><span class="catalog-brand">Orange</span><span class="catalog-brand">Guru Kripa</span><span class="catalog-brand">Newfil</span><span class="catalog-brand">Joyfil</span>' data-hi-html='<span class="catalog-brand">प्रोफ़ाइल</span><span class="catalog-brand">गुरु गोल्ड</span><span class="catalog-brand">सुपर पैक</span><span class="catalog-brand">शक्तिमान</span><span class="catalog-brand">ऑरेंज</span><span class="catalog-brand">गुरु कृपा</span><span class="catalog-brand">न्यूफ़िल</span><span class="catalog-brand">जॉयफ़िल</span>'><span class="catalog-brand">Profile</span><span class="catalog-brand">Guru Gold</span><span class="catalog-brand">Super Pack</span><span class="catalog-brand">Shaktiman</span><span class="catalog-brand">Orange</span><span class="catalog-brand">Guru Kripa</span><span class="catalog-brand">Newfil</span><span class="catalog-brand">Joyfil</span></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/PlasticSutli.jpg" alt="Plastic Sutli"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="Plastic Sutli" data-hi="प्लास्टिक सुतली">Plastic Sutli</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+          <div class="catalog-card ccat-pet" onclick="this.classList.toggle('flipped')" role="button" aria-label="PET Green Wire">
+            <div class="catalog-card-inner">
+              <div class="catalog-card-front">
+                <div class="catalog-card-name" data-en="PET Green Wire" data-hi="PET ग्रीन वायर">PET Green Wire</div>
+                <div class="catalog-card-sub" data-en="1.7 mm diameter" data-hi="1.7 mm व्यास">1.7 mm diameter</div>
+                <div class="catalog-brands"></div>
+                <div class="catalog-flip-hint"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg><span data-en="Click to view" data-hi="देखने के लिए क्लिक करें">Click to view</span></div>
+              </div>
+              <div class="catalog-card-back"><img src="brand_assets/PETGreenWire.jpg" alt="PET Green Wire"><div class="catalog-back-overlay"><div class="catalog-back-name" data-en="PET Green Wire" data-hi="PET ग्रीन वायर">PET Green Wire</div><div class="catalog-back-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /cat-niwars -->
+
+    </div><!-- /catalog-body -->
+  </div><!-- /catalog-modal -->
+
+  <!-- ═══════════════ SCROLL TO TOP ═══════════════ -->
+  <button id="scroll-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <script>
+    /* ══════════════════════════════════════════
+       ROPE CANVAS ANIMATION
+    ══════════════════════════════════════════ */
+    (function() {
+      const canvas = document.getElementById('rope-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const W         = 76;
+      const CX        = W / 2;
+      const COIL_CY   = 95;
+      const COIL_R    = 26;
+      const WAVE_FREQ = 0.10;
+      const WAVE_AMP  = 9;
+      const ROPE_START_Y_FULL = COIL_CY + COIL_R + 8;
+
+      canvas.width = W;
+      function resize() { canvas.height = window.innerHeight; }
+
+      /* — Coil shrinks as rope uncoils; returns the Y where the trail begins — */
+      function drawCoil(coilFraction) {
+        const loops = 3.8 * coilFraction + 0.5;
+        const r     = COIL_R * (0.5 + 0.5 * coilFraction);
+        const steps = 300;
+
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.arc(CX, COIL_CY, r + 7, 0, Math.PI * 2);
+        const discGrad = ctx.createRadialGradient(CX, COIL_CY, 4, CX, COIL_CY, r + 7);
+        discGrad.addColorStop(0, 'rgba(26,18,8,0.55)');
+        discGrad.addColorStop(1, 'rgba(26,18,8,0.25)');
+        ctx.fillStyle = discGrad;
+        ctx.fill();
+
+        const strands = [
+          { phase: 0,              width: 7, color: '#8B5E3C', alpha: 1    },
+          { phase: Math.PI * 0.6,  width: 5, color: '#D4A96A', alpha: 0.7  },
+          { phase: Math.PI * 1.25, width: 3, color: '#4A2A10', alpha: 0.45 },
+        ];
+
+        strands.forEach(({ phase, width, color, alpha }) => {
+          ctx.beginPath();
+          for (let i = 0; i <= steps; i++) {
+            const t     = i / steps;
+            const angle = t * 2 * Math.PI * loops - Math.PI / 2 + phase;
+            const rad   = r * (1 - t * 0.82);
+            const x     = CX + rad * Math.cos(angle);
+            const y     = COIL_CY + rad * Math.sin(angle) * 0.78;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = color;
+          ctx.lineWidth   = width;
+          ctx.lineCap     = 'round';
+          ctx.lineJoin    = 'round';
+          ctx.globalAlpha = alpha;
+          ctx.stroke();
+        });
+
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.arc(CX, COIL_CY, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#4A2A10';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(CX, COIL_CY, r + 4, -Math.PI * 0.7, Math.PI * 0.05);
+        ctx.strokeStyle = 'rgba(212,169,106,0.2)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.restore();
+        return COIL_CY + r + 8;
+      }
+
+      /* — Trail grows from coil bottom; length proportional to scroll progress — */
+      function drawRopeTrail(progress, ropeStartY) {
+        if (progress <= 0.002) return;
+
+        const maxLen = canvas.height - ROPE_START_Y_FULL - 18;
+        const endY   = ropeStartY + maxLen * progress;
+        if (endY <= ropeStartY) return;
+
+        ctx.save();
+
+        function buildPath(phaseShift, ampScale) {
+          ctx.beginPath();
+          ctx.moveTo(CX + Math.sin(phaseShift) * WAVE_AMP * ampScale, ropeStartY);
+          for (let y = ropeStartY + 1; y <= endY; y += 1) {
+            const t = (y - ropeStartY) * WAVE_FREQ;
+            ctx.lineTo(CX + Math.sin(t + phaseShift) * WAVE_AMP * ampScale, y);
+          }
+        }
+
+        ctx.save();
+        ctx.shadowColor   = 'rgba(0,0,0,0.25)';
+        ctx.shadowBlur    = 6;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        buildPath(0, 1);
+        const mainGrad = ctx.createLinearGradient(0, ropeStartY, 0, endY);
+        mainGrad.addColorStop(0,    '#D4A96A');
+        mainGrad.addColorStop(0.3,  '#8B5E3C');
+        mainGrad.addColorStop(0.65, '#C49A6C');
+        mainGrad.addColorStop(1,    '#6F4E37');
+        ctx.strokeStyle = mainGrad;
+        ctx.lineWidth   = 10;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        ctx.stroke();
+        ctx.restore();
+
+        buildPath(Math.PI, 0.45);
+        ctx.strokeStyle = 'rgba(230,190,130,0.55)';
+        ctx.lineWidth   = 3.5;
+        ctx.lineCap     = 'round';
+        ctx.stroke();
+
+        buildPath(Math.PI * 0.5, 0.6);
+        ctx.strokeStyle = 'rgba(50,25,8,0.4)';
+        ctx.lineWidth   = 2.5;
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(50,25,8,0.22)';
+        ctx.lineWidth   = 1.5;
+        const tickSpacing = 22;
+        for (let y = ropeStartY + tickSpacing; y <= endY; y += tickSpacing) {
+          const t     = (y - ropeStartY) * WAVE_FREQ;
+          const cx_   = CX + Math.sin(t) * WAVE_AMP;
+          const angle = Math.atan(Math.cos(t) * WAVE_FREQ * WAVE_AMP) + Math.PI / 2;
+          ctx.save();
+          ctx.translate(cx_, y);
+          ctx.rotate(angle);
+          ctx.beginPath();
+          ctx.moveTo(-5, 0); ctx.lineTo(5, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        const tipT = (endY - ropeStartY) * WAVE_FREQ;
+        const tipX = CX + Math.sin(tipT) * WAVE_AMP;
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur  = 5;
+        ctx.beginPath();
+        ctx.arc(tipX, endY, 7, 0, Math.PI * 2);
+        const knotGrad = ctx.createRadialGradient(tipX - 2, endY - 2, 1, tipX, endY, 7);
+        knotGrad.addColorStop(0, '#C49A6C');
+        knotGrad.addColorStop(1, '#4A2A10');
+        ctx.fillStyle = knotGrad;
+        ctx.fill();
+        ctx.restore();
+
+        ctx.restore();
+      }
+
+      /* — Main render — */
+      function render() {
+        ctx.clearRect(0, 0, W, canvas.height);
+        const scrolled   = window.scrollY;
+        const maxScroll  = document.documentElement.scrollHeight - window.innerHeight;
+        const progress   = maxScroll > 0 ? Math.min(scrolled / maxScroll, 1) : 0;
+        const ropeStartY = drawCoil(1 - progress);
+        drawRopeTrail(progress, ropeStartY);
+      }
+
+      resize();
+      render();
+      window.addEventListener('scroll', render, { passive: true });
+      window.addEventListener('resize', function() { resize(); render(); });
+    })();
+
+    /* ══════════════════════════════════════════
+       NAV — Scroll State
+    ══════════════════════════════════════════ */
+    (function() {
+      const nav = document.getElementById('navbar');
+      const btn = document.getElementById('scroll-top');
+      function onScroll() {
+        if (window.scrollY > 60) {
+          nav.classList.add('scrolled');
+          btn.classList.add('visible');
+        } else {
+          nav.classList.remove('scrolled');
+          btn.classList.remove('visible');
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+
+    /* ══════════════════════════════════════════
+       MOBILE MENU
+    ══════════════════════════════════════════ */
+    (function() {
+      const hbg  = document.getElementById('hamburger');
+      const menu = document.getElementById('mobile-menu');
+      let open = false;
+      hbg.addEventListener('click', function() {
+        open = !open;
+        menu.classList.toggle('open', open);
+        hbg.setAttribute('aria-expanded', open);
+        const spans = hbg.querySelectorAll('span');
+        if (open) {
+          spans[0].style.transform = 'translateY(7px) rotate(45deg)';
+          spans[1].style.opacity   = '0';
+          spans[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+        } else {
+          spans[0].style.transform = '';
+          spans[1].style.opacity   = '';
+          spans[2].style.transform = '';
+        }
+      });
+    })();
+    function closeMobileMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.getElementById('hamburger').setAttribute('aria-expanded', false);
+      const spans = document.getElementById('hamburger').querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity   = '';
+      spans[2].style.transform = '';
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL REVEAL (IntersectionObserver)
+    ══════════════════════════════════════════ */
+    (function() {
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(function(el) {
+        observer.observe(el);
+      });
+    })();
+
+    /* ══════════════════════════════════════════
+       FULL CATALOG MODAL
+    ══════════════════════════════════════════ */
+    (function() {
+      const modal  = document.getElementById('catalog-modal');
+      const openBtn  = document.getElementById('btn-view-all');
+      const closeBtn = document.getElementById('catalog-close');
+      const tabs   = modal.querySelectorAll('.catalog-tab');
+      const sections = modal.querySelectorAll('.catalog-section');
+
+      function openModal() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        closeBtn.focus();
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        openBtn.focus();
+      }
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+
+      /* Close on backdrop click */
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+      });
+
+      /* Close on Escape */
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (modal.classList.contains('open')) closeModal();
+          if (document.getElementById('faces-modal').classList.contains('open')) closeFaces();
+        }
+      });
+
+      /* Faces modal helpers — lock body scroll while open */
+      function openFaces() {
+        document.getElementById('faces-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeFaces() {
+        document.getElementById('faces-modal').classList.remove('open');
+        document.body.style.overflow = '';
+      }
+      window.openFaces = openFaces;
+      window.closeFaces = closeFaces;
+      document.getElementById('faces-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeFaces();
+      });
+
+      /* Tab switching */
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          tabs.forEach(function(t) { t.classList.remove('active'); });
+          sections.forEach(function(s) { s.classList.remove('active'); });
+          tab.classList.add('active');
+          document.getElementById('cat-' + tab.dataset.tab).classList.add('active');
+          modal.querySelector('.catalog-body').scrollTop = 0;
+        });
+      });
+    })();
+
+    /* ══════════════════════════════════════════
+       EMAILJS CONFIG  — replace the three values
+       below after completing the setup described
+       in the <head> comment block.
+    ══════════════════════════════════════════ */
+    const EMAILJS_PUBLIC_KEY  = 'iyc57oMmsSnAP1syT';   // Account > API Keys
+    const EMAILJS_SERVICE_ID  = 'nasreenhakim@gmail.com';   // Email Services
+    const EMAILJS_TEMPLATE_ID = 'template_685vllv';  // Email Templates
+
+    (function() {
+      if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      }
+    })();
+
+    /* ══════════════════════════════════════════
+       CONTACT FORM — Send via EmailJS
+    ══════════════════════════════════════════ */
+    /* ══════════════════════════════════════════
+       BILINGUAL TOGGLE  EN ↔ HI
+    ══════════════════════════════════════════ */
+    var currentLang = 'en';
+    function toggleLang() {
+      currentLang = currentLang === 'en' ? 'hi' : 'en';
+      var isHi = currentLang === 'hi';
+
+      /* Update toggle button labels */
+      document.querySelectorAll('.lang-label').forEach(function(el) {
+        el.textContent = isHi ? 'EN' : 'हिं';
+      });
+
+      /* Swap plain text */
+      document.querySelectorAll('[data-en]').forEach(function(el) {
+        el.textContent = isHi ? el.dataset.hi : el.dataset.en;
+      });
+
+      /* Swap HTML content (for elements with BR tags or brand spans) */
+      document.querySelectorAll('[data-en-html]').forEach(function(el) {
+        el.innerHTML = isHi ? el.dataset.hiHtml : el.dataset.enHtml;
+      });
+
+      /* Swap placeholder text */
+      document.querySelectorAll('[data-en-ph]').forEach(function(el) {
+        el.placeholder = isHi ? el.dataset.hiPh : el.dataset.enPh;
+      });
+    }
+    window.toggleLang = toggleLang;
+
+    async function handleForm(e) {
+      e.preventDefault();
+      const form   = e.target;
+      const btn    = form.querySelector('button[type=submit]');
+      const banner = document.getElementById('form-success');
+
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      const params = {
+        from_name: form.name.value.trim(),
+        phone:     form.phone.value.trim() || 'Not provided',
+        reply_to:  form.email.value.trim() || 'Not provided',
+        message:   form.message.value.trim(),
+        to_email:  'nasreenhakim@gmail.com',
+      };
+
+      /* ── Live send via EmailJS ── */
+      if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+        try {
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+          banner.style.display = 'block';
+          btn.textContent = 'Sent ✓';
+          btn.style.background = '#2D7A44';
+          form.reset();
+        } catch (err) {
+          btn.textContent = 'Send Enquiry';
+          btn.disabled = false;
+          btn.style.background = '';
+          const errDetail = err && (err.text || err.message || JSON.stringify(err));
+          const errDisplay = document.getElementById('form-error-detail');
+          if (errDisplay) {
+            errDisplay.textContent = 'EmailJS error: ' + errDetail;
+            errDisplay.style.display = 'block';
+          }
+          console.error('EmailJS error:', err);
+        }
+      } else {
+        /* ── Dev / preview mode — show banner without sending ── */
+        setTimeout(function() {
+          banner.style.display = 'block';
+          btn.textContent = 'Sent ✓';
+          btn.style.background = '#2D7A44';
+        }, 700);
+      }
+    }
+  </script>
+
+</body>
+</html>
