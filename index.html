@@ -1136,7 +1136,7 @@
       .catalog-card.flipped .catalog-card-inner {
         -webkit-transform: none !important; transform: none !important;
       }
-      /* Front face drives card height */
+      /* Front face drives card height — min-height ensures photo has room */
       .catalog-card-front {
         position: relative !important;
         top: auto !important; right: auto !important;
@@ -1144,6 +1144,7 @@
         -webkit-transform: none !important; transform: none !important;
         transition: opacity 0.35s ease; z-index: 2;
         height: auto !important;
+        min-height: 200px;
       }
       /* Back face overlays front */
       .catalog-card-back {
