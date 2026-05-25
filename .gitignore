@@ -6,8 +6,8 @@ screenshot.mjs
 fullshot.mjs
 fullshot2.mjs
 
-# AI assistant instructions
-CLAUDE.md
+# Claude Code internal files
+.claude/
 
 # OS files
 .DS_Store
