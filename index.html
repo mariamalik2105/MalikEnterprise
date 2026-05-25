@@ -429,10 +429,10 @@
     @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 2rem; } }
     /* ── Mobile: replace 3D flip with opacity crossfade to prevent z-plane bleed ── */
     @media (max-width: 768px) {
-      .product-card { -webkit-perspective: none; perspective: none; }
+      .product-card { -webkit-perspective: none !important; perspective: none !important; }
       .product-card-inner {
-        -webkit-transform-style: flat; transform-style: flat;
-        -webkit-transition: none; transition: none;
+        -webkit-transform-style: flat !important; transform-style: flat !important;
+        -webkit-transition: none !important; transition: none !important;
       }
       .product-card-inner,
       .product-card.flipped .product-card-inner {
@@ -1106,10 +1106,10 @@
       .catalog-tabs-bar { padding: 0.9rem 1.5rem; }
       .catalog-body { padding: 1.5rem; }
       .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1.25rem; }
-      .catalog-card { height: 250px; -webkit-perspective: none; perspective: none; }
+      .catalog-card { height: 250px; -webkit-perspective: none !important; perspective: none !important; }
       .catalog-card-inner {
-        -webkit-transform-style: flat; transform-style: flat;
-        -webkit-transition: none; transition: none;
+        -webkit-transform-style: flat !important; transform-style: flat !important;
+        -webkit-transition: none !important; transition: none !important;
       }
       .catalog-card-inner,
       .catalog-card.flipped .catalog-card-inner {
