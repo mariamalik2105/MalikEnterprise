@@ -426,7 +426,7 @@
       gap: 2rem;
       margin-top: 3.5rem;
     }
-    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 4rem; } }
+    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 2rem; } }
     /* ── Mobile: replace 3D flip with opacity crossfade to prevent z-plane bleed ── */
     @media (max-width: 768px) {
       .product-card { -webkit-perspective: none; perspective: none; }
@@ -999,7 +999,7 @@
     .catalog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.35rem;
+      gap: 1.5rem;
     }
     /* ── Catalog flip cards ── */
     .catalog-card {
@@ -1105,7 +1105,7 @@
       .catalog-header { padding: 1.25rem 1.5rem; }
       .catalog-tabs-bar { padding: 0.9rem 1.5rem; }
       .catalog-body { padding: 1.5rem; }
-      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; }
+      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1.25rem; }
       .catalog-card { height: 250px; -webkit-perspective: none; perspective: none; }
       .catalog-card-inner {
         -webkit-transform-style: flat; transform-style: flat;
@@ -1655,7 +1655,7 @@
     <div class="catalog-header">
       <div>
         <p class="catalog-eyebrow" data-en="Complete Range" data-hi="पूरी रेंज">Complete Range</p>
-        <h2 class="catalog-title" data-en="All Products" data-hi="सभी उत्पाद">All Products</h2>
+        <h2 class="catalog-title" data-en="More Products" data-hi="सभी उत्पाद">More Products</h2>
       </div>
       <button class="catalog-close" id="catalog-close" aria-label="Close">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
