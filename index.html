@@ -595,7 +595,7 @@
     .product-card.flipped .product-card-back img { transform: scale(1.04); }
     .product-card-back-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,18,8,0.82) 0%, rgba(26,18,8,0.15) 45%, transparent 70%);
+      background: linear-gradient(to top, rgba(26,18,8,0.92) 0%, rgba(26,18,8,0.25) 50%, transparent 72%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -607,8 +607,28 @@
       font-weight: 700;
       color: var(--beige);
       letter-spacing: -0.02em;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.65rem;
     }
+    .back-wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #25D366;
+      color: #fff;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 100px;
+      width: fit-content;
+      margin-bottom: 0.75rem;
+      transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .back-wa-btn:hover { background: #1ebe5a; transform: scale(1.05); }
+    .back-wa-btn:active { transform: scale(0.97); }
     .back-flip-hint {
       font-family: 'Roboto Mono', monospace;
       font-size: 0.62rem;
@@ -1470,6 +1490,10 @@
               <img src="brand_assets/PP.jpg" alt="PP Rope coil">
               <div class="product-card-back-overlay">
                 <div class="back-product-name" data-en="PP Rope" data-hi="पीपी रस्सी">PP Rope</div>
+                <a class="back-wa-btn" href="https://wa.me/919425904432?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20PP%20Rope." target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" data-en="Enquire on WhatsApp" data-hi="WhatsApp पर पूछें">
+                  <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.651 4.83 1.79 6.86L2 30l7.34-1.77A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.3 19.45c-.345-.173-2.04-1.006-2.356-1.12-.315-.115-.545-.172-.774.173-.23.345-.888 1.12-1.088 1.35-.2.23-.4.258-.745.086-.345-.173-1.455-.537-2.772-1.71-1.024-.913-1.715-2.04-1.916-2.385-.2-.345-.021-.531.15-.703.155-.155.345-.403.518-.604.172-.2.23-.345.345-.575.115-.23.058-.432-.029-.604-.086-.172-.774-1.865-1.06-2.554-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.603.086-.918.43-.316.345-1.204 1.177-1.204 2.87s1.233 3.33 1.405 3.56c.172.23 2.427 3.706 5.88 5.196.822.355 1.463.567 1.963.726.824.262 1.574.225 2.167.136.66-.098 2.04-.834 2.328-1.638.287-.805.287-1.494.2-1.638-.086-.144-.315-.23-.66-.403z"/></svg>
+                  Enquire on WhatsApp
+                </a>
                 <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
               </div>
             </div>
@@ -1499,6 +1523,10 @@
               <img src="brand_assets/Cotton_niwar.jpeg" alt="Cotton niwar roll">
               <div class="product-card-back-overlay">
                 <div class="back-product-name" data-en="Niwar" data-hi="निवार">Niwar</div>
+                <a class="back-wa-btn" href="https://wa.me/919425904432?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Niwar." target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" data-en="Enquire on WhatsApp" data-hi="WhatsApp पर पूछें">
+                  <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.651 4.83 1.79 6.86L2 30l7.34-1.77A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.3 19.45c-.345-.173-2.04-1.006-2.356-1.12-.315-.115-.545-.172-.774.173-.23.345-.888 1.12-1.088 1.35-.2.23-.4.258-.745.086-.345-.173-1.455-.537-2.772-1.71-1.024-.913-1.715-2.04-1.916-2.385-.2-.345-.021-.531.15-.703.155-.155.345-.403.518-.604.172-.2.23-.345.345-.575.115-.23.058-.432-.029-.604-.086-.172-.774-1.865-1.06-2.554-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.603.086-.918.43-.316.345-1.204 1.177-1.204 2.87s1.233 3.33 1.405 3.56c.172.23 2.427 3.706 5.88 5.196.822.355 1.463.567 1.963.726.824.262 1.574.225 2.167.136.66-.098 2.04-.834 2.328-1.638.287-.805.287-1.494.2-1.638-.086-.144-.315-.23-.66-.403z"/></svg>
+                  Enquire on WhatsApp
+                </a>
                 <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
               </div>
             </div>
@@ -1528,6 +1556,10 @@
               <img src="brand_assets/White_resham.jpeg" alt="Resham rope bundles">
               <div class="product-card-back-overlay">
                 <div class="back-product-name" data-en="Resham Rope" data-hi="रेशम की रस्सी">Resham Rope</div>
+                <a class="back-wa-btn" href="https://wa.me/919425904432?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Resham%20Rope." target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" data-en="Enquire on WhatsApp" data-hi="WhatsApp पर पूछें">
+                  <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.651 4.83 1.79 6.86L2 30l7.34-1.77A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.3 19.45c-.345-.173-2.04-1.006-2.356-1.12-.315-.115-.545-.172-.774.173-.23.345-.888 1.12-1.088 1.35-.2.23-.4.258-.745.086-.345-.173-1.455-.537-2.772-1.71-1.024-.913-1.715-2.04-1.916-2.385-.2-.345-.021-.531.15-.703.155-.155.345-.403.518-.604.172-.2.23-.345.345-.575.115-.23.058-.432-.029-.604-.086-.172-.774-1.865-1.06-2.554-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.603.086-.918.43-.316.345-1.204 1.177-1.204 2.87s1.233 3.33 1.405 3.56c.172.23 2.427 3.706 5.88 5.196.822.355 1.463.567 1.963.726.824.262 1.574.225 2.167.136.66-.098 2.04-.834 2.328-1.638.287-.805.287-1.494.2-1.638-.086-.144-.315-.23-.66-.403z"/></svg>
+                  Enquire on WhatsApp
+                </a>
                 <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
               </div>
             </div>
@@ -1557,6 +1589,10 @@
               <img src="brand_assets/PlasticSutli.jpg" alt="Plastic Sutli coil">
               <div class="product-card-back-overlay">
                 <div class="back-product-name" data-en="Plastic Sutli" data-hi="प्लास्टिक सुतली">Plastic Sutli</div>
+                <a class="back-wa-btn" href="https://wa.me/919425904432?text=Hi%2C%20I%27d%20like%20to%20enquire%20about%20Plastic%20Sutli." target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" data-en="Enquire on WhatsApp" data-hi="WhatsApp पर पूछें">
+                  <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.651 4.83 1.79 6.86L2 30l7.34-1.77A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.3 19.45c-.345-.173-2.04-1.006-2.356-1.12-.315-.115-.545-.172-.774.173-.23.345-.888 1.12-1.088 1.35-.2.23-.4.258-.745.086-.345-.173-1.455-.537-2.772-1.71-1.024-.913-1.715-2.04-1.916-2.385-.2-.345-.021-.531.15-.703.155-.155.345-.403.518-.604.172-.2.23-.345.345-.575.115-.23.058-.432-.029-.604-.086-.172-.774-1.865-1.06-2.554-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.603.086-.918.43-.316.345-1.204 1.177-1.204 2.87s1.233 3.33 1.405 3.56c.172.23 2.427 3.706 5.88 5.196.822.355 1.463.567 1.963.726.824.262 1.574.225 2.167.136.66-.098 2.04-.834 2.328-1.638.287-.805.287-1.494.2-1.638-.086-.144-.315-.23-.66-.403z"/></svg>
+                  Enquire on WhatsApp
+                </a>
                 <div class="back-flip-hint" data-en="↩ click to go back" data-hi="↩ वापस जाने के लिए क्लिक करें">↩ click to go back</div>
               </div>
             </div>
