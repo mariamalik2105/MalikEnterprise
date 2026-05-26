@@ -418,40 +418,66 @@
       margin-top: 0.5rem;
     }
 
-    /* ─── Products ─── */
+    /* ─── Products Carousel ─── */
     #products { background: var(--beige); }
     .products-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-direction: row;
       gap: 2rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
       margin-top: 3.5rem;
+      padding-bottom: 0.25rem;
+      cursor: grab;
     }
-    @media (max-width: 580px) { .products-grid { grid-template-columns: 1fr; gap: 2rem; align-items: start; } }
-    /* ── Mobile: opacity crossfade, content-driven height ── */
+    .products-grid::-webkit-scrollbar { display: none; }
+    .products-grid.grabbing { cursor: grabbing; scroll-snap-type: none; }
+
+    /* Dots */
+    .products-dots {
+      display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.75rem;
+    }
+    .products-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(111,78,55,0.25);
+      border: none; padding: 0; cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      /* larger tap target on touch devices */
+      position: relative;
+    }
+    .products-dot::after {
+      content: ''; position: absolute;
+      inset: -10px;
+    }
+    .products-dot.active { background: var(--coffee); transform: scale(1.35); }
+
+    /* ── Mobile: opacity crossfade, fixed-height carousel ── */
     @media (max-width: 768px) {
       .product-card {
         -webkit-perspective: none !important; perspective: none !important;
-        height: auto !important;
+        height: 420px !important;
+        flex: 0 0 calc(85vw) !important;
       }
       .product-card-inner {
         -webkit-transform-style: flat !important; transform-style: flat !important;
         -webkit-transition: none !important; transition: none !important;
         -webkit-transform: none !important; transform: none !important;
-        height: auto !important; position: relative !important;
+        height: 100% !important; position: relative !important;
       }
       .product-card.flipped .product-card-inner {
         -webkit-transform: none !important; transform: none !important;
       }
-      /* Front face: in normal flow so it drives the card height */
       .product-card-front {
-        position: relative !important;
-        top: auto !important; right: auto !important;
-        bottom: auto !important; left: auto !important;
+        position: absolute !important;
+        top: 0 !important; right: 0 !important;
+        bottom: 0 !important; left: 0 !important;
         -webkit-transform: none !important; transform: none !important;
         transition: opacity 0.35s ease; z-index: 2;
-        height: auto !important;
+        height: 100% !important;
       }
-      /* Back face: absolute, covers same area as front */
       .product-card-back {
         position: absolute !important;
         top: 0 !important; right: 0 !important;
@@ -465,6 +491,8 @@
     /* ─── Flip Cards ─── */
     .product-card {
       height: 368px;
+      flex: 0 0 300px;
+      scroll-snap-align: start;
       -webkit-perspective: 1200px;
       perspective: 1200px;
       cursor: pointer;
@@ -1484,6 +1512,13 @@
 
       </div><!-- /products-grid -->
 
+      <div class="products-dots" aria-hidden="true">
+        <button class="products-dot active" data-index="0"></button>
+        <button class="products-dot" data-index="1"></button>
+        <button class="products-dot" data-index="2"></button>
+        <button class="products-dot" data-index="3"></button>
+      </div>
+
       <div class="products-cta reveal">
         <button class="btn-view-all" id="btn-view-all" aria-label="View all products catalog">
           <span data-en="View More Products" data-hi="और उत्पाद देखें">View More Products</span>
@@ -2122,6 +2157,112 @@
       spans[1].style.opacity   = '';
       spans[2].style.transform = '';
     }
+
+    /* ══════════════════════════════════════════
+       PRODUCTS CAROUSEL
+    ══════════════════════════════════════════ */
+    (function() {
+      var grid    = document.querySelector('.products-grid');
+      var section = document.getElementById('products');
+      var cards   = Array.from(grid.querySelectorAll('.product-card'));
+      var dots    = Array.from(document.querySelectorAll('.products-dot'));
+      var current = 0;
+      var paused  = false;
+      var timer, scrollDebounce;
+
+      function getNearestIndex() {
+        return cards.reduce(function(best, c, i) {
+          return Math.abs(c.offsetLeft - grid.offsetLeft - grid.scrollLeft) <
+                 Math.abs(cards[best].offsetLeft - grid.offsetLeft - grid.scrollLeft) ? i : best;
+        }, 0);
+      }
+
+      function syncDots(idx) {
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+      }
+
+      function goTo(idx) {
+        current = (idx + cards.length) % cards.length;
+        var offset = cards[current].offsetLeft - grid.offsetLeft;
+        /* scrollTo with smooth — fallback to instant for older iOS */
+        try { grid.scrollTo({ left: offset, behavior: 'smooth' }); }
+        catch(e) { grid.scrollLeft = offset; }
+        syncDots(current);
+      }
+
+      function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(function() { if (!paused) goTo(current + 1); }, 3200);
+      }
+      function stopTimer() { clearInterval(timer); }
+
+      /* Trigger only when section enters viewport; reset to card 1 each time */
+      var sectionObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            goTo(0);
+            setTimeout(startTimer, 1200);
+          } else {
+            stopTimer();
+          }
+        });
+      }, { threshold: 0.2 }); /* 0.2 works on both desktop & tall mobile sections */
+      sectionObserver.observe(section);
+
+      /* Dot buttons */
+      dots.forEach(function(d) {
+        d.addEventListener('click', function() { goTo(+d.dataset.index); startTimer(); });
+      });
+
+      /* Desktop: pause on hover */
+      grid.addEventListener('mouseenter', function() { paused = true; });
+      grid.addEventListener('mouseleave', function() { paused = false; });
+
+      /* Desktop: drag to scroll */
+      var isDown = false, startX = 0, scrollStart = 0;
+      grid.addEventListener('mousedown', function(e) {
+        isDown = true; grid.classList.add('grabbing');
+        startX = e.pageX; scrollStart = grid.scrollLeft;
+        stopTimer(); paused = true;
+      });
+      document.addEventListener('mouseup', function() {
+        if (!isDown) return;
+        isDown = false; grid.classList.remove('grabbing');
+        paused = false;
+        current = getNearestIndex();
+        syncDots(current);
+        startTimer();
+      });
+      grid.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        grid.scrollLeft = scrollStart - (e.pageX - startX);
+      });
+
+      /* Mobile: pause auto-scroll during swipe, resume + sync after */
+      grid.addEventListener('touchstart', function() {
+        stopTimer(); paused = true;
+      }, { passive: true });
+
+      grid.addEventListener('touchend', function() {
+        /* wait for iOS snap to settle before reading position */
+        setTimeout(function() {
+          current = getNearestIndex();
+          syncDots(current);
+          paused = false;
+          startTimer();
+        }, 350);
+      }, { passive: true });
+
+      /* Debounced scroll fallback for dot sync (covers all browsers incl. old iOS) */
+      grid.addEventListener('scroll', function() {
+        clearTimeout(scrollDebounce);
+        scrollDebounce = setTimeout(function() {
+          current = getNearestIndex();
+          syncDots(current);
+        }, 150);
+      }, { passive: true });
+    })();
 
     /* ══════════════════════════════════════════
        SCROLL REVEAL (IntersectionObserver)
